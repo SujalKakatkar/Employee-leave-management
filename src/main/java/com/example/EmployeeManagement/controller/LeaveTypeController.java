@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/leavetype")
 public class LeaveTypeController {
 
-    private LeaveTypeService leaveTypeService;
+    private final LeaveTypeService leaveTypeService;
 
     public LeaveTypeController(LeaveTypeService leaveTypeService) {
         this.leaveTypeService = leaveTypeService;

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/holidays")
 public class HolidayController {
 
-    private HolidayService holidayService;
+    private final HolidayService holidayService;
 
 
     public HolidayController(HolidayService holidayService) {

@@ -14,9 +14,9 @@ import java.util.List;
 
 @Service
 public class LeaveBalanceService {
-    private LeaveBalanceRepository leaveBalanceRepository;
-    private UserRepository userRepository;
-    private LeaveTypeRepository leaveTypeRepository;
+    private final LeaveBalanceRepository leaveBalanceRepository;
+    private final UserRepository userRepository;
+    private final LeaveTypeRepository leaveTypeRepository;
 
     public LeaveBalanceService(LeaveBalanceRepository leaveBalanceRepository, UserRepository userRepository, LeaveTypeRepository leaveTypeRepository) {
         this.leaveBalanceRepository = leaveBalanceRepository;
@@ -71,11 +71,10 @@ public class LeaveBalanceService {
         return  responseList;
     }
 
-    //update the balance of an employee
     //this service is used when approved
-    public void updateLeaveBalance(Integer userId, Integer leaveTypeId, Double leaveDays) {
+    public void updateLeaveBalance(Integer userId, Integer leaveTypeId, Double leaveDays, Integer year) {
         LeaveBalance leaveBalance = leaveBalanceRepository
-                .findByUser_UserIdAndLeaveType_LeaveTypeId(userId, leaveTypeId)
+                .findByUser_UserIdAndLeaveType_LeaveTypeIdAndYear(userId, leaveTypeId,year)
                 .orElseThrow(
                         () -> new RuntimeException("leaveBalance not found")
                 );

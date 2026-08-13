@@ -1,8 +1,10 @@
 package com.example.EmployeeManagement.controller;
 
 
+import com.example.EmployeeManagement.dto.LeaveApprovalDto;
 import com.example.EmployeeManagement.dto.LeaveRequestDto;
 import com.example.EmployeeManagement.dto.LeaveRequestResponse;
+import com.example.EmployeeManagement.service.LeaveApprovalService;
 import com.example.EmployeeManagement.service.LeaveRequestService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -15,10 +17,16 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/leaverequest")
-@AllArgsConstructor
 public class LeaveRequestController {
 
-    private LeaveRequestService leaveRequestService;
+    private final LeaveRequestService leaveRequestService;
+    private final LeaveApprovalService leaveApprovalService;
+
+    public LeaveRequestController(LeaveRequestService leaveRequestService, LeaveApprovalService leaveApprovalService) {
+        this.leaveRequestService = leaveRequestService;
+        this.leaveApprovalService = leaveApprovalService;
+    }
+
 
     @PostMapping
     public ResponseEntity<LeaveRequestResponse> createLeaveRequest(@Valid @RequestBody LeaveRequestDto requestDto, Authentication authentication){
@@ -32,6 +40,16 @@ public class LeaveRequestController {
         String email = authentication.getName();
         return ResponseEntity.ok(
                 leaveRequestService.getLeaveRequests(email)
+        );
+    }
+
+    @PatchMapping("/review")
+    public ResponseEntity<String> reviewLeaveRequest(@RequestBody LeaveApprovalDto leaveApprovalDto, Authentication authentication){
+        String email = authentication.getName();
+          leaveApprovalService.reviewTheRequest(leaveApprovalDto, email);
+
+        return ResponseEntity.ok(
+                "done with request"
         );
 
     }

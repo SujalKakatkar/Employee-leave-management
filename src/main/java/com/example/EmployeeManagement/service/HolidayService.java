@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class HolidayService {
 
-    private HolidayRepository holidayRepository;
+    private final HolidayRepository holidayRepository;
 
     public HolidayService(HolidayRepository holidayRepository) {
         this.holidayRepository = holidayRepository;

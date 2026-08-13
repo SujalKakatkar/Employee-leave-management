@@ -1,7 +1,6 @@
 package com.example.EmployeeManagement.controller;
 
 import com.example.EmployeeManagement.dto.LeaveBalanceResponse;
-import com.example.EmployeeManagement.entity.LeaveBalance;
 import com.example.EmployeeManagement.service.LeaveBalanceService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,7 +11,7 @@ import java.util.List;
 @RequestMapping("/api/leavebalance")
 public class LeaveBalanceController {
 
-    private LeaveBalanceService leaveBalanceService;
+    private final LeaveBalanceService leaveBalanceService;
 
     public LeaveBalanceController(LeaveBalanceService leaveBalanceService) {
         this.leaveBalanceService = leaveBalanceService;

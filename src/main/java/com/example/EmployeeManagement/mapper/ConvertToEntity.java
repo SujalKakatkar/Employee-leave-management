@@ -1,11 +1,10 @@
 package com.example.EmployeeManagement.mapper;
 
+import com.example.EmployeeManagement.dto.LeaveApprovalDto;
 import com.example.EmployeeManagement.dto.LeaveRequestDto;
 import com.example.EmployeeManagement.dto.UserRequest;
-import com.example.EmployeeManagement.entity.LeaveBalance;
-import com.example.EmployeeManagement.entity.LeaveRequest;
-import com.example.EmployeeManagement.entity.LeaveType;
-import com.example.EmployeeManagement.entity.User;
+import com.example.EmployeeManagement.entity.*;
+import com.example.EmployeeManagement.enums.ApproverRole;
 import com.example.EmployeeManagement.enums.LeaveStatus;
 import com.example.EmployeeManagement.enums.Role;
 
@@ -38,6 +37,23 @@ public class ConvertToEntity {
         leaveRequest.setLeaveType(leaveType);
         leaveRequest.setStatus(LeaveStatus.PENDING);
         return leaveRequest;
+    }
+
+    public static LeaveApproval covertToLeaveApproval(
+            LeaveApprovalDto dto,
+            LeaveRequest leaveRequest,
+            User approver,
+            ApproverRole role
+    ){
+        LeaveApproval leaveApproval = new LeaveApproval();
+        leaveApproval.setStatus(dto.getStatus());
+        leaveApproval.setApprover(approver);
+        leaveApproval.setLeaveRequest(leaveRequest);
+        leaveApproval.setApproverRole(role);
+        leaveApproval.setComments(dto.getComment());
+
+        return leaveApproval;
+
     }
 
 

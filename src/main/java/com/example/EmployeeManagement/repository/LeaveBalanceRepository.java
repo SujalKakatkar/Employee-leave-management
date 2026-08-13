@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface LeaveBalanceRepository extends JpaRepository<LeaveBalance, Integer> {
 
-    Optional<LeaveBalance> findByUser_UserIdAndLeaveType_LeaveTypeId(Integer userId, Integer leaveTypeId);
+    Optional<LeaveBalance> findByUser_UserIdAndLeaveType_LeaveTypeIdAndYear(Integer userId, Integer leaveTypeId,Integer year);
 
     List<LeaveBalance> findByUser_Username(String username);
 }
