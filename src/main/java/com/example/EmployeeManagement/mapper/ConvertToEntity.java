@@ -2,7 +2,7 @@ package com.example.EmployeeManagement.mapper;
 
 import com.example.EmployeeManagement.dto.LeaveApprovalDto;
 import com.example.EmployeeManagement.dto.LeaveRequestDto;
-import com.example.EmployeeManagement.dto.UserRequest;
+import com.example.EmployeeManagement.dto.user.UserRequest;
 import com.example.EmployeeManagement.entity.*;
 import com.example.EmployeeManagement.enums.ApproverRole;
 import com.example.EmployeeManagement.enums.LeaveStatus;

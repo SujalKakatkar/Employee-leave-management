@@ -37,7 +37,7 @@ public class LeaveRequestService {
     //request for leave
     public LeaveRequestResponse requestLeave(LeaveRequestDto leaveRequestDto, String email) {
         //convert the dto to real entity
-        User user = userRepository.findByEmail(email)
+        User user = userRepository.findByEmailAndEnabledTrue(email)
                 .orElseThrow(
                         () -> new RuntimeException("user not found")
                 );
@@ -70,6 +70,10 @@ public class LeaveRequestService {
 
         long actualDays = days - holidayCount;
 
+
+        //todo: add check point the actual days should not cross the limit of lee
+
+
         leaveRequest.setNumberOfDays((double) actualDays);
         leaveRequest.setStatus(LeaveStatus.PENDING);
         //add the request to the table
@@ -81,7 +85,7 @@ public class LeaveRequestService {
 
     public List<LeaveRequestResponse> getLeaveRequests(String email){
         //find the user with email
-        User user = userRepository.findByEmail(email).orElseThrow(
+        User user = userRepository.findByEmailAndEnabledTrue(email).orElseThrow(
                 ()->new RuntimeException("user not found")
         );
 

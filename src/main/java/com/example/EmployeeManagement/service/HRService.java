@@ -1,13 +1,17 @@
 package com.example.EmployeeManagement.service;
 
 
-import com.example.EmployeeManagement.dto.UserRequest;
+import com.example.EmployeeManagement.dto.user.UserResponse;
 import com.example.EmployeeManagement.entity.User;
 import com.example.EmployeeManagement.enums.Role;
+import com.example.EmployeeManagement.mapper.ConvertToDto;
 import com.example.EmployeeManagement.repository.LeaveApprovalRepository;
 import com.example.EmployeeManagement.repository.LeaveRequestRepository;
 import com.example.EmployeeManagement.repository.UserRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class HRService {
@@ -31,7 +35,7 @@ public class HRService {
                 ()->new RuntimeException("can't find employee")
         );
 
-        User Hr = userRepository.findByEmail(email).orElseThrow(
+        User Hr = userRepository.findByEmailAndEnabledTrue(email).orElseThrow(
                 ()->new RuntimeException("can't find employee")
         );
 
@@ -63,12 +67,58 @@ public class HRService {
 
     }
 
+    //disable employee
+    public void disableEmployee(String username){
+        //check if exists
+        User user = userRepository.findByUsernameAndEnabledTrue(username).orElseThrow(
+                ()-> new RuntimeException("user not found")
+        );
+        //check is it a manager
+        if(user.getRole() == Role.MANAGER){
+        //add null the manger id refenced by this manager
+            List<User> userList = userRepository.findAllByManager_UserId(user.getUserId());
+            for(User temp : userList) temp.setManager(null);
+
+            userRepository.saveAll(userList);
+        }
+        //isEnable false
+        user.setEnabled(false);
+        userRepository.save(user);
+        //add all the search with isenble true for users
+    }
+
 
 
     //get all employees
+    public List<UserResponse> getAllEmployees(){
+        List<User> userList = userRepository.findAllByRoleInAndEnabledTrue(List.of(Role.EMPLOYEE, Role.MANAGER));
+
+        List<UserResponse> userResponsesList = new ArrayList<>();
+        for (User user : userList){
+            userResponsesList.add(ConvertToDto.convertToUserResponse(user));
+
+        }
+
+        return userResponsesList;
+
+    }
+
     // get all request
+    public List<UserResponse> getAllManagers(){
+        List<User> userList = userRepository.findAllByRoleInAndEnabledTrue(List.of(Role.MANAGER));
+
+        List<UserResponse> userResponsesList = new ArrayList<>();
+        for (User user : userList){
+            userResponsesList.add(ConvertToDto.convertToUserResponse(user));
+
+        }
+
+        return userResponsesList;
+
+    }
 
     //get all approved
+
 
     //get all summary
 

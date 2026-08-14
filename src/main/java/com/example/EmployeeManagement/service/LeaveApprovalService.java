@@ -44,7 +44,7 @@ public class LeaveApprovalService {
 
     //review
     public void reviewTheRequest(LeaveApprovalDto leaveApprovalDto,String email){
-        User approver = userRepository.findByEmail(email).orElseThrow(
+        User approver = userRepository.findByEmailAndEnabledTrue(email).orElseThrow(
                 ()-> new RuntimeException("user not found")
         );
         LeaveRequest leaveRequest = leaveRequestRepository.findById(leaveApprovalDto.getLeaveRequestId()).orElseThrow(

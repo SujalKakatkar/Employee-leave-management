@@ -38,6 +38,9 @@ public class SecurityConfig {
                                 //hr work
                                 .requestMatchers(HttpMethod.PUT ,"/api/hr/promote").hasRole("HR")
                                 .requestMatchers(HttpMethod.PATCH, "/api/hr/promote").hasRole("HR")
+                                .requestMatchers(HttpMethod.GET, "/api/hr/all").hasRole("HR")
+                                .requestMatchers(HttpMethod.GET, "/api/hr/managers").hasRole("HR")
+                                .requestMatchers(HttpMethod.PATCH, "/api/hr/disable").hasRole("HR")
 
                                 //leave type post and get
                                 .requestMatchers(HttpMethod.POST, "/api/leavetype").hasRole("HR")

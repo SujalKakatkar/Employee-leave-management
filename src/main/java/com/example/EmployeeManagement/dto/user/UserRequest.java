@@ -1,4 +1,4 @@
-package com.example.EmployeeManagement.dto;
+package com.example.EmployeeManagement.dto.user;
 
 
 import jakarta.validation.constraints.NotBlank;

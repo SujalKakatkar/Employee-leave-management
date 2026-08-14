@@ -28,7 +28,7 @@ public class LeaveBalanceService {
     //create balance of an employee
     public void createLeaveBalance(String username, Integer year) {
         // find the user
-        User user = userRepository.findByUsername(username).orElseThrow(
+        User user = userRepository.findByUsernameAndEnabledTrue(username).orElseThrow(
                 () -> new RuntimeException("user not found")
         );
         //get all the leave types

@@ -1,8 +1,9 @@
 package com.example.EmployeeManagement.service;
 
 import com.example.EmployeeManagement.dto.LoginRequest;
-import com.example.EmployeeManagement.dto.UserRequest;
-import com.example.EmployeeManagement.dto.UserResponse;
+import com.example.EmployeeManagement.dto.user.UserLoginResponse;
+import com.example.EmployeeManagement.dto.user.UserRequest;
+import com.example.EmployeeManagement.dto.user.UserResponse;
 import com.example.EmployeeManagement.entity.User;
 import com.example.EmployeeManagement.mapper.ConvertToDto;
 import com.example.EmployeeManagement.mapper.ConvertToEntity;
@@ -44,11 +45,11 @@ public class UserService {
 
         User temp = userRepository.save(newUser);
 
-        return ConvertToDto.convertToUserResponse(temp, null);
+        return ConvertToDto.convertToUserResponse(temp);
     }
 
-    public UserResponse loginUser(LoginRequest login) {
-        User temp = userRepository.findByUsername(login.getUsername()).orElseThrow(
+    public UserLoginResponse loginUser(LoginRequest login) {
+        User temp = userRepository.findByUsernameAndEnabledTrue(login.getUsername()).orElseThrow(
                 () -> new RuntimeException("user not found")
         );
 
@@ -57,6 +58,6 @@ public class UserService {
         if (!isMatch) throw new RuntimeException("Wrong password");
         String token = jwtService.generateToken(temp);
 
-        return ConvertToDto.convertToUserResponse(temp, token);
+        return ConvertToDto.convertToUserLoginResponse(temp, token);
     }
 }

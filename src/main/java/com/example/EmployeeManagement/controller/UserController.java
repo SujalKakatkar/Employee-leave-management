@@ -4,8 +4,9 @@ package com.example.EmployeeManagement.controller;
 //authentication check only
 
 import com.example.EmployeeManagement.dto.LoginRequest;
-import com.example.EmployeeManagement.dto.UserRequest;
-import com.example.EmployeeManagement.dto.UserResponse;
+import com.example.EmployeeManagement.dto.user.UserLoginResponse;
+import com.example.EmployeeManagement.dto.user.UserRequest;
+import com.example.EmployeeManagement.dto.user.UserResponse;
 import com.example.EmployeeManagement.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,7 +31,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UserResponse> login(@RequestBody LoginRequest loginRequest){
+    public ResponseEntity<UserLoginResponse> login(@RequestBody LoginRequest loginRequest){
         return ResponseEntity.ok(userService.loginUser(loginRequest));
     }
 

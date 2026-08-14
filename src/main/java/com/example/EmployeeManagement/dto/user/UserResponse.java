@@ -1,4 +1,4 @@
-package com.example.EmployeeManagement.dto;
+package com.example.EmployeeManagement.dto.user;
 
 import com.example.EmployeeManagement.enums.Role;
 import lombok.AllArgsConstructor;
@@ -22,7 +22,5 @@ public class UserResponse {
     private String phone;
     private String address;
     private String dept;
-    private String token;
-
 
 }

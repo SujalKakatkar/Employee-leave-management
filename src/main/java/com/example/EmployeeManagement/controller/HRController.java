@@ -2,10 +2,13 @@ package com.example.EmployeeManagement.controller;
 
 
 
+import com.example.EmployeeManagement.dto.user.UserResponse;
 import com.example.EmployeeManagement.service.HRService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 //responsibility
 //add new employee or manager
@@ -39,5 +42,40 @@ public class HRController {
         hrService.assignManger(empId, managerId);
         return ResponseEntity.ok("the employee is prompted to manger");
     }
+
+    //all employees including managers
+    @GetMapping("/all")
+    public ResponseEntity<List<UserResponse>> getAll(Authentication authentication){
+
+        return ResponseEntity.ok(
+                hrService.getAllEmployees()
+        );
+
+    }
+
+    //all managers
+    @GetMapping("/managers")
+    public ResponseEntity<List<UserResponse>> getAllManagers(Authentication authentication){
+
+        return ResponseEntity.ok(
+                hrService.getAllManagers()
+        );
+
+    }
+
+
+
+    //delete manager and
+    @PatchMapping("/disable")
+    public ResponseEntity<String> disableEmployee(@RequestParam String username){
+            hrService.disableEmployee(username);
+            return ResponseEntity.ok(
+                    "employee is disabled"
+            );
+    }
+
+    //demote to employee
+
+
 
 }
