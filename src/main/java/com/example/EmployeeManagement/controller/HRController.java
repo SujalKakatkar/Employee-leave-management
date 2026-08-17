@@ -10,13 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-//responsibility
-//add new employee or manager
-//update  employee or manager
-//delete employee and manager
-//getData or employee or manger /allEmployees /allmanagers and both
-//disable enable
-//approve and reject leave
+
 
 @RestController
 @RequestMapping("/api/hr")
@@ -65,7 +59,7 @@ public class HRController {
 
 
 
-    //delete manager and
+    //disable user profile
     @PatchMapping("/disable")
     public ResponseEntity<String> disableEmployee(@RequestParam String username){
             hrService.disableEmployee(username);

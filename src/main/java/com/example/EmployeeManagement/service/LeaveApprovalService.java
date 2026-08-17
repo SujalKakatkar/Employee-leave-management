@@ -1,13 +1,13 @@
 package com.example.EmployeeManagement.service;
 
-import com.example.EmployeeManagement.dto.LeaveApprovalDto;
+import com.example.EmployeeManagement.dto.LeaveApprovalResponse;
 import com.example.EmployeeManagement.entity.LeaveApproval;
 import com.example.EmployeeManagement.entity.LeaveRequest;
 import com.example.EmployeeManagement.entity.User;
 import com.example.EmployeeManagement.enums.ApproverRole;
 import com.example.EmployeeManagement.enums.LeaveStatus;
 import com.example.EmployeeManagement.enums.Role;
-import com.example.EmployeeManagement.mapper.ConvertToEntity;
+import com.example.EmployeeManagement.mapper.MapToEntity;
 import com.example.EmployeeManagement.repository.LeaveApprovalRepository;
 import com.example.EmployeeManagement.repository.LeaveRequestRepository;
 import com.example.EmployeeManagement.repository.UserRepository;
@@ -43,11 +43,11 @@ public class LeaveApprovalService {
 
 
     //review
-    public void reviewTheRequest(LeaveApprovalDto leaveApprovalDto,String email){
+    public void reviewTheRequest(LeaveApprovalResponse leaveApprovalResponse, String email){
         User approver = userRepository.findByEmailAndEnabledTrue(email).orElseThrow(
                 ()-> new RuntimeException("user not found")
         );
-        LeaveRequest leaveRequest = leaveRequestRepository.findById(leaveApprovalDto.getLeaveRequestId()).orElseThrow(
+        LeaveRequest leaveRequest = leaveRequestRepository.findById(leaveApprovalResponse.getLeaveRequestId()).orElseThrow(
                 ()-> new RuntimeException("Request not found")
         );
 
@@ -62,7 +62,7 @@ public class LeaveApprovalService {
             throw new RuntimeException("the request is already approved");
         }
 
-        if(leaveApprovalDto.getStatus() == LeaveStatus.APPROVED){
+        if(leaveApprovalResponse.getStatus() == LeaveStatus.APPROVED){
             leaveBalanceService.updateLeaveBalance(
                     leaveAppliedUser.getUserId(),
                     leaveRequest.getLeaveType().getLeaveTypeId(),
@@ -73,10 +73,10 @@ public class LeaveApprovalService {
         }
 
 
-        LeaveApproval leaveApproval = ConvertToEntity.covertToLeaveApproval(leaveApprovalDto,leaveRequest,approver,toApproverRole(approver.getRole()));
+        LeaveApproval leaveApproval = MapToEntity.mapToLeaveApproval(leaveApprovalResponse,leaveRequest,approver,toApproverRole(approver.getRole()));
         leaveApprovalRepository.save(leaveApproval);
 
-        leaveRequest.setStatus(leaveApprovalDto.getStatus());
+        leaveRequest.setStatus(leaveApprovalResponse.getStatus());
         leaveRequestRepository.save(leaveRequest);
 
 

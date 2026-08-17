@@ -37,10 +37,8 @@ public class SecurityConfig {
 
                                 //hr work
                                 .requestMatchers(HttpMethod.PUT ,"/api/hr/promote").hasRole("HR")
-                                .requestMatchers(HttpMethod.PATCH, "/api/hr/promote").hasRole("HR")
-                                .requestMatchers(HttpMethod.GET, "/api/hr/all").hasRole("HR")
-                                .requestMatchers(HttpMethod.GET, "/api/hr/managers").hasRole("HR")
-                                .requestMatchers(HttpMethod.PATCH, "/api/hr/disable").hasRole("HR")
+                                .requestMatchers(HttpMethod.PATCH, "/api/hr/*").hasRole("HR")
+                                .requestMatchers(HttpMethod.GET, "/api/hr/*").hasRole("HR")
 
                                 //leave type post and get
                                 .requestMatchers(HttpMethod.POST, "/api/leavetype").hasRole("HR")
@@ -48,11 +46,11 @@ public class SecurityConfig {
 
                                 //Holidays post and get
                                 .requestMatchers(HttpMethod.POST, "/api/holidays").hasRole("HR")
+                                .requestMatchers(HttpMethod.DELETE, "/api/holidays").hasRole("HR")
                                 .requestMatchers(HttpMethod.GET,"/api/holidays").authenticated()
 
                                 //leave balance sheet table
                                 .requestMatchers(HttpMethod.POST, "/api/leavebalance").hasRole("HR")
-                                .requestMatchers(HttpMethod.GET, "/api/leavebalance").hasAnyRole("MANAGER","HR")
                                 .requestMatchers(HttpMethod.GET,"/api/leavebalance/*").authenticated()
 
                                 //leave Request

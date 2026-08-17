@@ -1,12 +1,12 @@
 package com.example.EmployeeManagement.service;
 
-import com.example.EmployeeManagement.dto.LoginRequest;
+import com.example.EmployeeManagement.dto.user.UserLoginRequest;
 import com.example.EmployeeManagement.dto.user.UserLoginResponse;
-import com.example.EmployeeManagement.dto.user.UserRequest;
+import com.example.EmployeeManagement.dto.user.UserCreateRequest;
 import com.example.EmployeeManagement.dto.user.UserResponse;
 import com.example.EmployeeManagement.entity.User;
-import com.example.EmployeeManagement.mapper.ConvertToDto;
-import com.example.EmployeeManagement.mapper.ConvertToEntity;
+import com.example.EmployeeManagement.mapper.MapToDto;
+import com.example.EmployeeManagement.mapper.MapToEntity;
 
 import com.example.EmployeeManagement.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,7 +27,7 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public UserResponse createEmployee(UserRequest user) {
+    public UserResponse createEmployee(UserCreateRequest user) {
         //if user exists with same username
         if (userRepository.existsByUsername(user.getUsername())) {
             throw new RuntimeException("username already used");
@@ -38,17 +38,17 @@ public class UserService {
         }
 
         //finally mapping the userdata to entity
-        User newUser = ConvertToEntity.convertToUserEntity(user);
+        User newUser = MapToEntity.mapToUser(user);
         //hashing the password
         newUser.setPassword(passwordEncoder.encode(user.getPassword()));
 
 
         User temp = userRepository.save(newUser);
 
-        return ConvertToDto.convertToUserResponse(temp);
+        return MapToDto.mapToUserResponse(temp);
     }
 
-    public UserLoginResponse loginUser(LoginRequest login) {
+    public UserLoginResponse loginUser(UserLoginRequest login) {
         User temp = userRepository.findByUsernameAndEnabledTrue(login.getUsername()).orElseThrow(
                 () -> new RuntimeException("user not found")
         );
@@ -58,6 +58,6 @@ public class UserService {
         if (!isMatch) throw new RuntimeException("Wrong password");
         String token = jwtService.generateToken(temp);
 
-        return ConvertToDto.convertToUserLoginResponse(temp, token);
+        return MapToDto.mapToLoginResponse(temp, token);
     }
 }

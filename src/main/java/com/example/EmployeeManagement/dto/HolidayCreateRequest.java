@@ -1,21 +1,21 @@
 package com.example.EmployeeManagement.dto;
 
-import com.example.EmployeeManagement.enums.LeaveStatus;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.time.LocalDate;
 
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class LeaveApprovalDto {
+public class HolidayCreateRequest {
 
-    private Integer leaveRequestId;
-    private LeaveStatus status;
-    private String comment;
+    private LocalDate date;
 
-
+    private String name;
 }

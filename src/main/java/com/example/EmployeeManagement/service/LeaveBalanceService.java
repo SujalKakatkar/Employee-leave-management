@@ -4,7 +4,7 @@ import com.example.EmployeeManagement.dto.LeaveBalanceResponse;
 import com.example.EmployeeManagement.entity.LeaveBalance;
 import com.example.EmployeeManagement.entity.LeaveType;
 import com.example.EmployeeManagement.entity.User;
-import com.example.EmployeeManagement.mapper.ConvertToDto;
+import com.example.EmployeeManagement.mapper.MapToDto;
 import com.example.EmployeeManagement.repository.LeaveBalanceRepository;
 import com.example.EmployeeManagement.repository.LeaveTypeRepository;
 import com.example.EmployeeManagement.repository.UserRepository;
@@ -56,7 +56,7 @@ public class LeaveBalanceService {
        List<LeaveBalance> leaveBalanceList = leaveBalanceRepository.findAll();
        List<LeaveBalanceResponse> responseList = new ArrayList<>();
        for(LeaveBalance leaveBalance : leaveBalanceList){
-           responseList.add(ConvertToDto.convertToLeaveBalanceResponse(leaveBalance));
+           responseList.add(MapToDto.mapToLeaveBalanceResponse(leaveBalance));
        }
 
        return responseList;
@@ -66,7 +66,7 @@ public class LeaveBalanceService {
         List<LeaveBalance> leaveBalanceList =  leaveBalanceRepository.findByUser_Username(username);
         List<LeaveBalanceResponse> responseList = new ArrayList<>();
         for(LeaveBalance leaveBalance : leaveBalanceList){
-            responseList.add(ConvertToDto.convertToLeaveBalanceResponse(leaveBalance));
+            responseList.add(MapToDto.mapToLeaveBalanceResponse(leaveBalance));
         }
         return  responseList;
     }

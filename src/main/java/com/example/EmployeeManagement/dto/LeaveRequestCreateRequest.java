@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Getter
 @Setter
-public class LeaveRequestDto {
+public class LeaveRequestCreateRequest {
 
     @NotNull
     private Integer LeaveTypeId;

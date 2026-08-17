@@ -1,14 +1,11 @@
 package com.example.EmployeeManagement.service;
 
-import com.example.EmployeeManagement.dto.LeaveRequestDto;
+import com.example.EmployeeManagement.dto.LeaveRequestCreateRequest;
 import com.example.EmployeeManagement.dto.LeaveRequestResponse;
-import com.example.EmployeeManagement.entity.Holiday;
-import com.example.EmployeeManagement.entity.LeaveRequest;
-import com.example.EmployeeManagement.entity.LeaveType;
-import com.example.EmployeeManagement.entity.User;
+import com.example.EmployeeManagement.entity.*;
 import com.example.EmployeeManagement.enums.LeaveStatus;
-import com.example.EmployeeManagement.mapper.ConvertToDto;
-import com.example.EmployeeManagement.mapper.ConvertToEntity;
+import com.example.EmployeeManagement.mapper.MapToDto;
+import com.example.EmployeeManagement.mapper.MapToEntity;
 import com.example.EmployeeManagement.repository.*;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,6 +14,7 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @AllArgsConstructor
@@ -35,17 +33,35 @@ public class LeaveRequestService {
     }
 
     //request for leave
-    public LeaveRequestResponse requestLeave(LeaveRequestDto leaveRequestDto, String email) {
+    public LeaveRequestResponse requestLeave(LeaveRequestCreateRequest leaveRequestCreateRequest, String email) {
         //convert the dto to real entity
         User user = userRepository.findByEmailAndEnabledTrue(email)
                 .orElseThrow(
                         () -> new RuntimeException("user not found")
                 );
         //validate the leave type id
-        LeaveType leaveType = leaveTypeRepository.findById(leaveRequestDto.getLeaveTypeId()).orElseThrow(
+        LeaveType leaveType = leaveTypeRepository.findById(leaveRequestCreateRequest.getLeaveTypeId()).orElseThrow(
                 () -> new RuntimeException("user not found")
         );
-        LeaveRequest leaveRequest = ConvertToEntity.convertToLeaveRequest(leaveRequestDto, leaveType, user);
+
+        //validate the leaveBalance
+
+        if(!leaveBalanceRepository.existsByUser_UserId(user.getUserId())){
+            throw new RuntimeException("user don't have any balance for repo");
+        }
+
+        //if that type of balace is availble
+        LeaveBalance leaveBalance =
+                leaveBalanceRepository.findByUser_UserIdAndLeaveType_LeaveTypeIdAndYear(user.getUserId(),leaveType.getLeaveTypeId(),leaveRequestCreateRequest.getStartDate().getYear()).orElseThrow(
+                        ()-> new RuntimeException("leave type balance not found")
+                );
+
+        if(Objects.equals(leaveBalance.getUsedDays(), leaveBalance.getAllocatedDays())){
+            throw new RuntimeException("the user has used all of their leaves");
+        }
+
+
+        LeaveRequest leaveRequest = MapToEntity.mapToLeaveRequest(leaveRequestCreateRequest, leaveType, user);
 
         LocalDate startDate = leaveRequest.getStartDate();
         LocalDate endDate = leaveRequest.getEndDate();
@@ -79,7 +95,7 @@ public class LeaveRequestService {
         //add the request to the table
         leaveRequestRepository.save(leaveRequest);
 
-        return ConvertToDto.convertToLeaveRequestDto(leaveRequest);
+        return MapToDto.mapToLeaveRequestResponse(leaveRequest);
     }
 
 
@@ -98,7 +114,7 @@ public class LeaveRequestService {
         //convert the leave request in the dto and
         for(LeaveRequest leaveRequest : leaveRequestList){
            responseList.add(
-                   ConvertToDto.convertToLeaveRequestDto(leaveRequest)
+                   MapToDto.mapToLeaveRequestResponse(leaveRequest)
            );
 
         }

@@ -4,7 +4,7 @@ package com.example.EmployeeManagement.service;
 import com.example.EmployeeManagement.dto.user.UserResponse;
 import com.example.EmployeeManagement.entity.User;
 import com.example.EmployeeManagement.enums.Role;
-import com.example.EmployeeManagement.mapper.ConvertToDto;
+import com.example.EmployeeManagement.mapper.MapToDto;
 import com.example.EmployeeManagement.repository.LeaveApprovalRepository;
 import com.example.EmployeeManagement.repository.LeaveRequestRepository;
 import com.example.EmployeeManagement.repository.UserRepository;
@@ -95,7 +95,7 @@ public class HRService {
 
         List<UserResponse> userResponsesList = new ArrayList<>();
         for (User user : userList){
-            userResponsesList.add(ConvertToDto.convertToUserResponse(user));
+            userResponsesList.add(MapToDto.mapToUserResponse(user));
 
         }
 
@@ -109,7 +109,7 @@ public class HRService {
 
         List<UserResponse> userResponsesList = new ArrayList<>();
         for (User user : userList){
-            userResponsesList.add(ConvertToDto.convertToUserResponse(user));
+            userResponsesList.add(MapToDto.mapToUserResponse(user));
 
         }
 

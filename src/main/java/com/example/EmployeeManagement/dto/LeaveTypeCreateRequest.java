@@ -1,17 +1,20 @@
 package com.example.EmployeeManagement.dto;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Setter
-@Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class LoginRequest {
-    private String username;
-    private String password;
+@Getter
+@Setter
+public class LeaveTypeCreateRequest {
+    private String name;
+
+    private Integer defaultDaysPerYear;
+
+    private Boolean isPaid;
+
 
 }

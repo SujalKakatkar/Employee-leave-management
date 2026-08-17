@@ -29,6 +29,8 @@ public class LeaveBalanceController {
     public ResponseEntity<List<LeaveBalanceResponse>> getAllBalance(){
         return ResponseEntity.ok(leaveBalanceService.getAll());
     }
+
+
     @GetMapping("/{username}")
     public ResponseEntity<List<LeaveBalanceResponse>> getAllTypesByUsername(@PathVariable String username){
         return  ResponseEntity.ok(leaveBalanceService.getAllBalanceByUsername(username));

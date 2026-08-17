@@ -12,7 +12,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class UserRequest {
+public class UserCreateRequest {
     @NotBlank(message = "name is required")
     @Size(min = 3, message = "name must be at least 3 characters")
     private String name;

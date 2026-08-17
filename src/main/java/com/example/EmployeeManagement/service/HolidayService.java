@@ -1,8 +1,15 @@
 package com.example.EmployeeManagement.service;
 
+import com.example.EmployeeManagement.dto.HolidayCreateRequest;
+import com.example.EmployeeManagement.dto.HolidayResponse;
 import com.example.EmployeeManagement.entity.Holiday;
+import com.example.EmployeeManagement.mapper.MapToDto;
+import com.example.EmployeeManagement.mapper.MapToEntity;
 import com.example.EmployeeManagement.repository.HolidayRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class HolidayService {
@@ -15,11 +22,11 @@ public class HolidayService {
 
 
     //create holiday
-    public Holiday createHoliday(Holiday holiday){
-        Holiday newHoliday = new Holiday();
-        newHoliday.setDate(holiday.getDate());
-        newHoliday.setName(holiday.getName());
-        return holidayRepository.save(newHoliday);
+    public HolidayResponse createHoliday(HolidayCreateRequest holidayCreateRequest){
+
+        Holiday holiday = holidayRepository.save(MapToEntity.mapToHoliday(holidayCreateRequest));
+
+        return MapToDto.mapToHolidayResponse(holiday);
     }
 
     //delete holiday
@@ -30,4 +37,15 @@ public class HolidayService {
         holidayRepository.delete(holiday);
     }
 
+    public List<HolidayResponse> getAllHolidays() {
+        List<Holiday> holidayList = holidayRepository.findAll();
+        List<HolidayResponse> responseList = new ArrayList<>();
+        for (Holiday holiday : holidayList){
+            responseList.add(
+                    MapToDto.mapToHolidayResponse(holiday)
+            );
+        }
+
+        return responseList;
+    }
 }

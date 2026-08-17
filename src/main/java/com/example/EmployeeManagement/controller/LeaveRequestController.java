@@ -1,13 +1,12 @@
 package com.example.EmployeeManagement.controller;
 
 
-import com.example.EmployeeManagement.dto.LeaveApprovalDto;
-import com.example.EmployeeManagement.dto.LeaveRequestDto;
+import com.example.EmployeeManagement.dto.LeaveApprovalResponse;
+import com.example.EmployeeManagement.dto.LeaveRequestCreateRequest;
 import com.example.EmployeeManagement.dto.LeaveRequestResponse;
 import com.example.EmployeeManagement.service.LeaveApprovalService;
 import com.example.EmployeeManagement.service.LeaveRequestService;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -29,7 +28,7 @@ public class LeaveRequestController {
 
 
     @PostMapping
-    public ResponseEntity<LeaveRequestResponse> createLeaveRequest(@Valid @RequestBody LeaveRequestDto requestDto, Authentication authentication){
+    public ResponseEntity<LeaveRequestResponse> createLeaveRequest(@Valid @RequestBody LeaveRequestCreateRequest requestDto, Authentication authentication){
         String email = authentication.getName();
         return ResponseEntity.ok(leaveRequestService.requestLeave(requestDto,email));
     }
@@ -44,9 +43,9 @@ public class LeaveRequestController {
     }
 
     @PatchMapping("/review")
-    public ResponseEntity<String> reviewLeaveRequest(@RequestBody LeaveApprovalDto leaveApprovalDto, Authentication authentication){
+    public ResponseEntity<String> reviewLeaveRequest(@RequestBody LeaveApprovalResponse leaveApprovalResponse, Authentication authentication){
         String email = authentication.getName();
-          leaveApprovalService.reviewTheRequest(leaveApprovalDto, email);
+          leaveApprovalService.reviewTheRequest(leaveApprovalResponse, email);
 
         return ResponseEntity.ok(
                 "done with request"
