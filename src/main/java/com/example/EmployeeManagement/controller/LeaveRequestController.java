@@ -33,6 +33,8 @@ public class LeaveRequestController {
         return ResponseEntity.ok(leaveRequestService.requestLeave(requestDto,email));
     }
 
+
+
     @GetMapping("/me")
     public ResponseEntity<List<LeaveRequestResponse>> get(Authentication authentication){
 
@@ -43,7 +45,7 @@ public class LeaveRequestController {
     }
 
     @PatchMapping("/review")
-    public ResponseEntity<String> reviewLeaveRequest(@RequestBody LeaveApprovalResponse leaveApprovalResponse, Authentication authentication){
+    public ResponseEntity<String> reviewLeaveRequest(@Valid @RequestBody LeaveApprovalResponse leaveApprovalResponse, Authentication authentication){
         String email = authentication.getName();
           leaveApprovalService.reviewTheRequest(leaveApprovalResponse, email);
 

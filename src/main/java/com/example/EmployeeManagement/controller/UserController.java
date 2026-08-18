@@ -8,6 +8,7 @@ import com.example.EmployeeManagement.dto.user.UserLoginResponse;
 import com.example.EmployeeManagement.dto.user.UserCreateRequest;
 import com.example.EmployeeManagement.dto.user.UserResponse;
 import com.example.EmployeeManagement.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,12 +27,12 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserResponse> create(@RequestBody UserCreateRequest userRequest){
+    public ResponseEntity<UserResponse> create(@Valid @RequestBody UserCreateRequest userRequest){
         return ResponseEntity.ok(userService.createEmployee(userRequest));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UserLoginResponse> login(@RequestBody UserLoginRequest loginRequest){
+    public ResponseEntity<UserLoginResponse> login(@Valid @RequestBody UserLoginRequest loginRequest){
         return ResponseEntity.ok(userService.loginUser(loginRequest));
     }
 

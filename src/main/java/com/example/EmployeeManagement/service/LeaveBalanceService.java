@@ -62,8 +62,8 @@ public class LeaveBalanceService {
        return responseList;
     }
 
-    public List<LeaveBalanceResponse> getAllBalanceByUsername(String username){
-        List<LeaveBalance> leaveBalanceList =  leaveBalanceRepository.findByUser_Username(username);
+    public List<LeaveBalanceResponse> getAllBalanceByUsername(Integer userId){
+        List<LeaveBalance> leaveBalanceList =  leaveBalanceRepository.findAllByUser_UserId(userId);
         List<LeaveBalanceResponse> responseList = new ArrayList<>();
         for(LeaveBalance leaveBalance : leaveBalanceList){
             responseList.add(MapToDto.mapToLeaveBalanceResponse(leaveBalance));

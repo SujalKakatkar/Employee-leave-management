@@ -2,13 +2,18 @@ package com.example.EmployeeManagement.controller;
 
 import com.example.EmployeeManagement.dto.LeaveBalanceResponse;
 import com.example.EmployeeManagement.service.LeaveBalanceService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/leavebalance")
+@Validated
 public class LeaveBalanceController {
 
     private final LeaveBalanceService leaveBalanceService;
@@ -19,7 +24,7 @@ public class LeaveBalanceController {
 
     //add leave balance to new employee
     @PostMapping
-    public ResponseEntity<String> addBalance(@RequestParam String username, @RequestParam Integer year){
+    public ResponseEntity<String> addBalance(@Valid @RequestParam String username, @RequestParam @Positive(message = "year must be positive") Integer year){
         leaveBalanceService.createLeaveBalance(username, year);
         return ResponseEntity.ok("done");
 
@@ -31,9 +36,9 @@ public class LeaveBalanceController {
     }
 
 
-    @GetMapping("/{username}")
-    public ResponseEntity<List<LeaveBalanceResponse>> getAllTypesByUsername(@PathVariable String username){
-        return  ResponseEntity.ok(leaveBalanceService.getAllBalanceByUsername(username));
+    @GetMapping("/{userId}")
+    public ResponseEntity<List<LeaveBalanceResponse>> getAllTypesByUsername(@PathVariable @NotBlank(message = "the username is required") Integer userId){
+        return  ResponseEntity.ok(leaveBalanceService.getAllBalanceByUsername(userId));
     }
 
 }

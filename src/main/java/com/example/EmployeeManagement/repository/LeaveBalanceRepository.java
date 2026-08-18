@@ -10,7 +10,7 @@ public interface LeaveBalanceRepository extends JpaRepository<LeaveBalance, Inte
 
     Optional<LeaveBalance> findByUser_UserIdAndLeaveType_LeaveTypeIdAndYear(Integer userId, Integer leaveTypeId,Integer year);
 
-    List<LeaveBalance> findByUser_Username(String username);
+    List<LeaveBalance> findAllByUser_UserId(Integer userId);
     boolean existsByUser_UserId(Integer userId);
 
 }

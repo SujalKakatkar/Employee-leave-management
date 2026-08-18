@@ -1,13 +1,18 @@
 package com.example.EmployeeManagement.service;
 
 
+import com.example.EmployeeManagement.dto.ReportResponse;
 import com.example.EmployeeManagement.dto.user.UserResponse;
+import com.example.EmployeeManagement.entity.LeaveBalance;
 import com.example.EmployeeManagement.entity.User;
 import com.example.EmployeeManagement.enums.Role;
 import com.example.EmployeeManagement.mapper.MapToDto;
 import com.example.EmployeeManagement.repository.LeaveApprovalRepository;
+import com.example.EmployeeManagement.repository.LeaveBalanceRepository;
 import com.example.EmployeeManagement.repository.LeaveRequestRepository;
 import com.example.EmployeeManagement.repository.UserRepository;
+import jakarta.validation.constraints.Positive;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -17,26 +22,32 @@ import java.util.List;
 public class HRService {
 
     private final UserRepository userRepository;
+    private final LeaveBalanceRepository leaveBalanceRepository;
     private LeaveApprovalRepository leaveApprovalRepository;
     private LeaveRequestRepository leaveRequestRepository;
 
-    public HRService(UserRepository userRepository, LeaveApprovalRepository leaveApprovalRepository, LeaveRequestRepository leaveRequestRepository) {
+    public HRService(UserRepository userRepository, LeaveBalanceRepository leaveBalanceRepository, LeaveApprovalRepository leaveApprovalRepository, LeaveRequestRepository leaveRequestRepository) {
         this.userRepository = userRepository;
+        this.leaveBalanceRepository = leaveBalanceRepository;
         this.leaveApprovalRepository = leaveApprovalRepository;
         this.leaveRequestRepository = leaveRequestRepository;
     }
 
 
     //Create a manger with existing employee
-    public void promoteManger(Integer empId, String email){
+    public void promoteManger(Integer empId, String email) {
         //get the employee
         //if it is null return
         User user = userRepository.findById(empId).orElseThrow(
-                ()->new RuntimeException("can't find employee")
+                () -> new RuntimeException("can't find employee")
         );
 
+        if (user.getRole() == Role.MANAGER) {
+            throw new RuntimeException("user is already manger");
+        }
+
         User Hr = userRepository.findByEmailAndEnabledTrue(email).orElseThrow(
-                ()->new RuntimeException("can't find employee")
+                () -> new RuntimeException("can't find employee")
         );
 
         //set role to manger
@@ -48,53 +59,56 @@ public class HRService {
 
 
     // assign the manger
-    public void assignManger(Integer empId, Integer mangerId){
+    public void assignManger(Integer empId, Integer mangerId) {
         //get the employee
         User user = userRepository.findById(empId).orElseThrow(
-                ()->new RuntimeException("can't find employee")
+                () -> new RuntimeException("can't find employee")
         );
+
+        if (user.getRole() == Role.MANAGER) {
+            throw new RuntimeException("one manager can't assign to other manager");
+        }
+
         //passing them a manger which is existed with manger id
         User manager = userRepository.findById(mangerId).orElseThrow(
-                ()->new RuntimeException("can't find employee")
+                () -> new RuntimeException("can't find employee")
         );
-        if(manager.getRole() == Role.EMPLOYEE) {
-            throw  new RuntimeException("the manger id is invalid");
+        if (manager.getRole() == Role.EMPLOYEE || manager.getRole() == Role.HR) {
+            throw new RuntimeException("the manger id is invalid");
         }
         user.setManager(manager);
         userRepository.save(user);
 
 
-
     }
 
     //disable employee
-    public void disableEmployee(String username){
+    public void disableEmployee(String username) {
         //check if exists
         User user = userRepository.findByUsernameAndEnabledTrue(username).orElseThrow(
-                ()-> new RuntimeException("user not found")
+                () -> new RuntimeException("user not found")
         );
         //check is it a manager
-        if(user.getRole() == Role.MANAGER){
-        //add null the manger id refenced by this manager
+        if (user.getRole() == Role.MANAGER) {
+            //add null the manger id refenced by this manager
             List<User> userList = userRepository.findAllByManager_UserId(user.getUserId());
-            for(User temp : userList) temp.setManager(null);
+            for (User temp : userList) temp.setManager(null);
 
             userRepository.saveAll(userList);
         }
         //isEnable false
         user.setEnabled(false);
         userRepository.save(user);
-        //add all the search with isenble true for users
+       
     }
 
 
-
     //get all employees
-    public List<UserResponse> getAllEmployees(){
+    public List<UserResponse> getAllEmployees() {
         List<User> userList = userRepository.findAllByRoleInAndEnabledTrue(List.of(Role.EMPLOYEE, Role.MANAGER));
 
         List<UserResponse> userResponsesList = new ArrayList<>();
-        for (User user : userList){
+        for (User user : userList) {
             userResponsesList.add(MapToDto.mapToUserResponse(user));
 
         }
@@ -104,11 +118,11 @@ public class HRService {
     }
 
     // get all request
-    public List<UserResponse> getAllManagers(){
+    public List<UserResponse> getAllManagers() {
         List<User> userList = userRepository.findAllByRoleInAndEnabledTrue(List.of(Role.MANAGER));
 
         List<UserResponse> userResponsesList = new ArrayList<>();
-        for (User user : userList){
+        for (User user : userList) {
             userResponsesList.add(MapToDto.mapToUserResponse(user));
 
         }
@@ -117,11 +131,48 @@ public class HRService {
 
     }
 
-    //get all approved
+    public ReportResponse getEmployeeReport(Integer empId) {
+
+        User user = userRepository.findById(empId).orElseThrow(
+                () -> new RuntimeException("user not found")
+        );
+
+        //the total is all the types of leaves in the year
+        List<LeaveBalance> leaveBalanceList = leaveBalanceRepository.findAllByUser_UserId(empId);
+
+        if (leaveBalanceList.isEmpty()) {
+            throw new RuntimeException("no leaves found");
+        }
+
+        double allocatedDays = 0;
+        double usedDays = 0;
+        for (LeaveBalance leaveBalance : leaveBalanceList) {
+            allocatedDays += leaveBalance.getAllocatedDays();
+            usedDays += leaveBalance.getUsedDays();
+        }
+
+        ReportResponse reportResponse = new ReportResponse();
+
+        reportResponse.setUserId(user.getUserId());
+        reportResponse.setManagerId(user.getManager() != null ? user.getManager().getUserId() : null);
+        reportResponse.setName(user.getName());
+        reportResponse.setRole(user.getRole());
+        reportResponse.setTotalLeaves(allocatedDays);
+        reportResponse.setUsedLeaves(usedDays);
+
+        return reportResponse;
+    }
 
 
-    //get all summary
+    //todo: learn simple and opitmal way to fetch the list of rows and think about N+1 problem while implementing this
 
-
-    //update employee
+//    public List<ReportResponse> getAllReports() {
+//
+//        List<User> userList = userRepository.findAllByRoleInAndEnabledTrue(List.of(Role.EMPLOYEE, Role.MANAGER));
+//
+//        for(User user : userList){
+//
+//        }
+//
+//    }
 }

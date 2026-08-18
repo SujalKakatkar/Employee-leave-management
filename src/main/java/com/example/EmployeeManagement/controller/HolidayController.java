@@ -6,6 +6,7 @@ import com.example.EmployeeManagement.dto.HolidayResponse;
 import com.example.EmployeeManagement.entity.Holiday;
 import com.example.EmployeeManagement.entity.LeaveType;
 import com.example.EmployeeManagement.service.HolidayService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,7 +24,7 @@ public class HolidayController {
     }
 
     @PostMapping
-    public ResponseEntity<HolidayResponse> createHoliday(@RequestBody HolidayCreateRequest holiday) {
+    public ResponseEntity<HolidayResponse> createHoliday(@Valid @RequestBody HolidayCreateRequest holiday) {
         return ResponseEntity.ok(holidayService.createHoliday(holiday));
     }
 

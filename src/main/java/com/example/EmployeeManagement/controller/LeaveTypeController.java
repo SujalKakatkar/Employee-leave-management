@@ -5,13 +5,17 @@ import com.example.EmployeeManagement.dto.LeaveTypeResponse;
 import com.example.EmployeeManagement.entity.LeaveType;
 import com.example.EmployeeManagement.enums.LeaveStatus;
 import com.example.EmployeeManagement.service.LeaveTypeService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/leavetype")
+@Validated
 public class LeaveTypeController {
 
     private final LeaveTypeService leaveTypeService;
@@ -22,7 +26,7 @@ public class LeaveTypeController {
 
 
     @PostMapping
-    public ResponseEntity<LeaveTypeResponse> createLeave(@RequestBody LeaveTypeCreateRequest leaveType) {
+    public ResponseEntity<LeaveTypeResponse> createLeave(@Valid @RequestBody LeaveTypeCreateRequest leaveType) {
         return ResponseEntity.ok(leaveTypeService.createLeave(leaveType));
     }
 
@@ -34,7 +38,7 @@ public class LeaveTypeController {
     }
 
     @DeleteMapping()
-    public ResponseEntity<String> deleteLeaveType(@RequestParam String name) {
+    public ResponseEntity<String> deleteLeaveType(@RequestParam @NotBlank(message = "name can't be blank or null") String name) {
         leaveTypeService.deleteLeave(name);
         return ResponseEntity.ok("the leave type is deleted");
     }

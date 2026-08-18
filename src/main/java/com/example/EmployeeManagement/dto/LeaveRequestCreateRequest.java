@@ -1,5 +1,6 @@
 package com.example.EmployeeManagement.dto;
 import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,6 +26,7 @@ public class LeaveRequestCreateRequest {
     @FutureOrPresent(message = "End date can't be in the past")
     private LocalDate endDate;
 
+    @NotBlank
     private String reason;
 
 }
