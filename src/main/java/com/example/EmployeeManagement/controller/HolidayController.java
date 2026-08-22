@@ -7,6 +7,7 @@ import com.example.EmployeeManagement.entity.Holiday;
 import com.example.EmployeeManagement.entity.LeaveType;
 import com.example.EmployeeManagement.service.HolidayService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,17 +26,17 @@ public class HolidayController {
 
     @PostMapping
     public ResponseEntity<HolidayResponse> createHoliday(@Valid @RequestBody HolidayCreateRequest holiday) {
-        return ResponseEntity.ok(holidayService.createHoliday(holiday));
+        return ResponseEntity.status(HttpStatus.CREATED).body(holidayService.createHoliday(holiday));
     }
 
     @GetMapping
     public ResponseEntity<List<HolidayResponse>> getAllHolidays(){
-        return ResponseEntity.ok(holidayService.getAllHolidays());
+        return ResponseEntity.status(HttpStatus.OK).body(holidayService.getAllHolidays());
     }
 
     @DeleteMapping
     public ResponseEntity<String> deleteLeaveType(@RequestParam String name) {
         holidayService.deleteHoliday(name);
-        return ResponseEntity.ok("the leave type is deleted");
+        return ResponseEntity.status(HttpStatus.OK).body("the leave type is deleted");
     }
 }

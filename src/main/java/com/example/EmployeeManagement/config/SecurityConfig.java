@@ -36,7 +36,7 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.POST, "/auth/register", "/auth/login").permitAll()
 
                                 //hr work
-                                .requestMatchers(HttpMethod.PUT ,"/api/hr/promote").hasRole("HR")
+                                .requestMatchers(HttpMethod.PUT ,"/api/hr/*").hasRole("HR")
                                 .requestMatchers(HttpMethod.PATCH, "/api/hr/*").hasRole("HR")
                                 .requestMatchers(HttpMethod.GET, "/api/hr/*").hasRole("HR")
 

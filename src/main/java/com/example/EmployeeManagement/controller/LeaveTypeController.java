@@ -7,6 +7,7 @@ import com.example.EmployeeManagement.enums.LeaveStatus;
 import com.example.EmployeeManagement.service.LeaveTypeService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -27,12 +28,12 @@ public class LeaveTypeController {
 
     @PostMapping
     public ResponseEntity<LeaveTypeResponse> createLeave(@Valid @RequestBody LeaveTypeCreateRequest leaveType) {
-        return ResponseEntity.ok(leaveTypeService.createLeave(leaveType));
+        return ResponseEntity.status(HttpStatus.OK).body(leaveTypeService.createLeave(leaveType));
     }
 
     @GetMapping
     public ResponseEntity<List<LeaveTypeResponse>> getAllTypes(){
-        return ResponseEntity.ok(
+        return ResponseEntity.status(HttpStatus.OK).body(
                 leaveTypeService.getAllTypes()
         );
     }
@@ -40,6 +41,6 @@ public class LeaveTypeController {
     @DeleteMapping()
     public ResponseEntity<String> deleteLeaveType(@RequestParam @NotBlank(message = "name can't be blank or null") String name) {
         leaveTypeService.deleteLeave(name);
-        return ResponseEntity.ok("the leave type is deleted");
+        return ResponseEntity.status(HttpStatus.OK).body("the leave type is deleted");
     }
 }

@@ -4,6 +4,9 @@ import com.example.EmployeeManagement.dto.LeaveBalanceResponse;
 import com.example.EmployeeManagement.entity.LeaveBalance;
 import com.example.EmployeeManagement.entity.LeaveType;
 import com.example.EmployeeManagement.entity.User;
+import com.example.EmployeeManagement.exceptions.InvalidLeaveOperationException;
+import com.example.EmployeeManagement.exceptions.ResourceAlreadyExistsException;
+import com.example.EmployeeManagement.exceptions.ResourceNotFoundException;
 import com.example.EmployeeManagement.mapper.MapToDto;
 import com.example.EmployeeManagement.repository.LeaveBalanceRepository;
 import com.example.EmployeeManagement.repository.LeaveTypeRepository;
@@ -27,10 +30,15 @@ public class LeaveBalanceService {
 
     //create balance of an employee
     public void createLeaveBalance(String username, Integer year) {
+
         // find the user
         User user = userRepository.findByUsernameAndEnabledTrue(username).orElseThrow(
-                () -> new RuntimeException("user not found")
+                () -> new ResourceNotFoundException("user not found")
         );
+        if(!leaveBalanceRepository.existsByUser_userIdAndUser_EnabledTrueAndYear(user.getUserId(),year)) {
+            throw  new ResourceAlreadyExistsException("i think you have already put leave balance for this user");
+        };
+
         //get all the leave types
         List<LeaveType> leaveTypeList = leaveTypeRepository.findAll();
         List<LeaveBalance> leaveBalancesList = new ArrayList<>();
@@ -76,13 +84,13 @@ public class LeaveBalanceService {
         LeaveBalance leaveBalance = leaveBalanceRepository
                 .findByUser_UserIdAndLeaveType_LeaveTypeIdAndYear(userId, leaveTypeId,year)
                 .orElseThrow(
-                        () -> new RuntimeException("leaveBalance not found")
+                        () -> new ResourceNotFoundException("leaveBalance not found")
                 );
 
         double newUsedDays = leaveBalance.getUsedDays() + leaveDays;
 
         if (newUsedDays > leaveBalance.getAllocatedDays()) {
-            throw new RuntimeException("You don't have enough leave balance");
+            throw new InvalidLeaveOperationException("You don't have enough leave balance");
         }
 
         leaveBalance.setUsedDays(newUsedDays);

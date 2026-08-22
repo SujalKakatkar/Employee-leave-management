@@ -3,11 +3,11 @@ package com.example.EmployeeManagement.service;
 import com.example.EmployeeManagement.dto.HolidayCreateRequest;
 import com.example.EmployeeManagement.dto.HolidayResponse;
 import com.example.EmployeeManagement.entity.Holiday;
+import com.example.EmployeeManagement.exceptions.ResourceNotFoundException;
 import com.example.EmployeeManagement.mapper.MapToDto;
 import com.example.EmployeeManagement.mapper.MapToEntity;
 import com.example.EmployeeManagement.repository.HolidayRepository;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,7 +32,7 @@ public class HolidayService {
     //delete holiday
     public void deleteHoliday(String name){
         Holiday holiday = holidayRepository.findByName(name).orElseThrow(
-                ()-> new RuntimeException("holiday with this name not exists")
+                ()-> new ResourceNotFoundException("holiday with this name not exists")
         );
         holidayRepository.delete(holiday);
     }

@@ -7,11 +7,15 @@ import com.example.EmployeeManagement.entity.User;
 import com.example.EmployeeManagement.enums.ApproverRole;
 import com.example.EmployeeManagement.enums.LeaveStatus;
 import com.example.EmployeeManagement.enums.Role;
+import com.example.EmployeeManagement.exceptions.ResourceNotFoundException;
+import com.example.EmployeeManagement.exceptions.RoleMismatchException;
+import com.example.EmployeeManagement.exceptions.StatusMismatchException;
 import com.example.EmployeeManagement.mapper.MapToEntity;
 import com.example.EmployeeManagement.repository.LeaveApprovalRepository;
 import com.example.EmployeeManagement.repository.LeaveRequestRepository;
 import com.example.EmployeeManagement.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
 
@@ -43,23 +47,24 @@ public class LeaveApprovalService {
 
 
     //review
+    @Transactional
     public void reviewTheRequest(LeaveApprovalResponse leaveApprovalResponse, String email){
         User approver = userRepository.findByEmailAndEnabledTrue(email).orElseThrow(
-                ()-> new RuntimeException("user not found")
+                ()-> new ResourceNotFoundException("user not found")
         );
         LeaveRequest leaveRequest = leaveRequestRepository.findById(leaveApprovalResponse.getLeaveRequestId()).orElseThrow(
-                ()-> new RuntimeException("Request not found")
+                ()-> new ResourceNotFoundException("Request not found")
         );
 
         //find which user wants the leave and check if he is th same as approve to deny
         User leaveAppliedUser = leaveRequest.getEmployee();
 
         if(Objects.equals(approver.getUserId(), leaveAppliedUser.getUserId())){
-            throw  new RuntimeException("you can't approve or reject your request");
+            throw  new RoleMismatchException("you can't approve or reject your request");
         }
 
         if(leaveRequest.getStatus() != LeaveStatus.PENDING){
-            throw new RuntimeException("the request is already approved");
+            throw new StatusMismatchException("the request is already approved");
         }
 
         if(leaveApprovalResponse.getStatus() == LeaveStatus.APPROVED){

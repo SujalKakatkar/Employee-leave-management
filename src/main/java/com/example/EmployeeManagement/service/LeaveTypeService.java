@@ -3,6 +3,7 @@ package com.example.EmployeeManagement.service;
 import com.example.EmployeeManagement.dto.LeaveTypeCreateRequest;
 import com.example.EmployeeManagement.dto.LeaveTypeResponse;
 import com.example.EmployeeManagement.entity.LeaveType;
+import com.example.EmployeeManagement.exceptions.ResourceNotFoundException;
 import com.example.EmployeeManagement.mapper.MapToDto;
 import com.example.EmployeeManagement.mapper.MapToEntity;
 import com.example.EmployeeManagement.repository.LeaveTypeRepository;
@@ -33,7 +34,7 @@ public class LeaveTypeService {
     //delete the leavetype
     public void deleteLeave(String name){
         LeaveType leaveType = leaveTypeRepository.findByName(name).orElseThrow(
-                ()-> new RuntimeException("the leave type not found")
+                ()-> new ResourceNotFoundException("the leave type not found")
         );
 
         leaveTypeRepository.delete(leaveType);

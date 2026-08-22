@@ -8,6 +8,7 @@ import com.example.EmployeeManagement.service.LeaveApprovalService;
 import com.example.EmployeeManagement.service.LeaveRequestService;
 import jakarta.validation.Valid;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +31,7 @@ public class LeaveRequestController {
     @PostMapping
     public ResponseEntity<LeaveRequestResponse> createLeaveRequest(@Valid @RequestBody LeaveRequestCreateRequest requestDto, Authentication authentication){
         String email = authentication.getName();
-        return ResponseEntity.ok(leaveRequestService.requestLeave(requestDto,email));
+        return ResponseEntity.status(HttpStatus.CREATED).body(leaveRequestService.requestLeave(requestDto,email));
     }
 
 
@@ -39,7 +40,7 @@ public class LeaveRequestController {
     public ResponseEntity<List<LeaveRequestResponse>> get(Authentication authentication){
 
         String email = authentication.getName();
-        return ResponseEntity.ok(
+        return ResponseEntity.status(HttpStatus.OK).body(
                 leaveRequestService.getLeaveRequests(email)
         );
     }
@@ -49,7 +50,7 @@ public class LeaveRequestController {
         String email = authentication.getName();
           leaveApprovalService.reviewTheRequest(leaveApprovalResponse, email);
 
-        return ResponseEntity.ok(
+        return ResponseEntity.status(HttpStatus.OK).body(
                 "done with request"
         );
 
