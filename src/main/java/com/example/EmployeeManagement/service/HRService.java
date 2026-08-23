@@ -13,8 +13,6 @@ import com.example.EmployeeManagement.repository.LeaveApprovalRepository;
 import com.example.EmployeeManagement.repository.LeaveBalanceRepository;
 import com.example.EmployeeManagement.repository.LeaveRequestRepository;
 import com.example.EmployeeManagement.repository.UserRepository;
-import jakarta.validation.constraints.Positive;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -85,9 +83,9 @@ public class HRService {
     }
 
     //disable employee
-    public void disableEmployee(String username) {
+    public void disableEmployee(Integer userId) {
         //check if exists
-        User user = userRepository.findByUsernameAndEnabledTrue(username).orElseThrow(
+        User user = userRepository.findByUserIdAndEnabledTrue(userId).orElseThrow(
                 () -> new ResourceNotFoundException("user not found")
         );
         //check is it a manager

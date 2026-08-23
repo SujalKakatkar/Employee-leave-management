@@ -30,9 +30,9 @@ public class HolidayService {
     }
 
     //delete holiday
-    public void deleteHoliday(String name){
-        Holiday holiday = holidayRepository.findByName(name).orElseThrow(
-                ()-> new ResourceNotFoundException("holiday with this name not exists")
+    public void deleteHoliday(Integer holidayId){
+        Holiday holiday = holidayRepository.findById(holidayId).orElseThrow(
+                ()-> new ResourceNotFoundException("holiday with this ID not exists")
         );
         holidayRepository.delete(holiday);
     }

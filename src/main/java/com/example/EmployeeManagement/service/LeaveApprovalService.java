@@ -41,7 +41,7 @@ public class LeaveApprovalService {
         return switch (role) {
             case HR -> ApproverRole.HR;
             case MANAGER -> MANAGER;
-            default -> throw new RuntimeException("This role cannot approve leave requests: " + role);
+            default -> throw new RoleMismatchException("This role cannot approve leave requests: " + role);
         };
     }
 

@@ -5,6 +5,7 @@ import com.example.EmployeeManagement.dto.ReportResponse;
 import com.example.EmployeeManagement.dto.user.UserResponse;
 import com.example.EmployeeManagement.service.HRService;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -74,8 +75,8 @@ public class HRController {
 
     //disable user profile
     @PatchMapping("/disable")
-    public ResponseEntity<String> disableEmployee(@RequestParam @NotBlank(message = "Username is required") String username) {
-        hrService.disableEmployee(username);
+    public ResponseEntity<String> disableEmployee(@RequestParam @NotNull(message = "Username is required") Integer userId) {
+        hrService.disableEmployee(userId);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body("employee is disabled");

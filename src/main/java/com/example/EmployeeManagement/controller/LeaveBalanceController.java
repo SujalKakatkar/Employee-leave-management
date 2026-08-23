@@ -25,8 +25,8 @@ public class LeaveBalanceController {
 
     //add leave balance to new employee
     @PostMapping
-    public ResponseEntity<String> addBalance(@Valid @RequestParam String username, @RequestParam @Positive(message = "year must be positive") Integer year){
-        leaveBalanceService.createLeaveBalance(username, year);
+    public ResponseEntity<String> addBalance(@Valid @RequestParam Integer userId, @RequestParam @Positive(message = "year must be positive") Integer year){
+        leaveBalanceService.createLeaveBalance(userId, year);
         return ResponseEntity.status(HttpStatus.CREATED).body("the balance for employee is added");
 
     }
@@ -39,7 +39,7 @@ public class LeaveBalanceController {
 
     @GetMapping("/{userId}")
     public ResponseEntity<List<LeaveBalanceResponse>> getAllTypesByUsername(@PathVariable @NotBlank(message = "the username is required") Integer userId){
-        return  ResponseEntity.status(HttpStatus.OK).body(leaveBalanceService.getAllBalanceByUsername(userId));
+        return  ResponseEntity.status(HttpStatus.OK).body(leaveBalanceService.getEmployeeBalance(userId));
     }
 
 }

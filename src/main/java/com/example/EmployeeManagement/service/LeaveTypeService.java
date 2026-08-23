@@ -31,9 +31,9 @@ public class LeaveTypeService {
         return MapToDto.mapToLeaveTypeResponse(leaveType);
     }
 
-    //delete the leavetype
-    public void deleteLeave(String name){
-        LeaveType leaveType = leaveTypeRepository.findByName(name).orElseThrow(
+    //delete the leave type
+    public void deleteLeave(Integer leaveId){
+        LeaveType leaveType = leaveTypeRepository.findById(leaveId).orElseThrow(
                 ()-> new ResourceNotFoundException("the leave type not found")
         );
 

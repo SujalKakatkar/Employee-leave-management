@@ -6,6 +6,7 @@ import com.example.EmployeeManagement.dto.user.UserCreateRequest;
 import com.example.EmployeeManagement.dto.user.UserResponse;
 import com.example.EmployeeManagement.entity.User;
 import com.example.EmployeeManagement.exceptions.ResourceAlreadyExistsException;
+import com.example.EmployeeManagement.exceptions.ResourceNotFoundException;
 import com.example.EmployeeManagement.mapper.MapToDto;
 import com.example.EmployeeManagement.mapper.MapToEntity;
 
@@ -13,7 +14,6 @@ import com.example.EmployeeManagement.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.lang.module.ResolutionException;
 
 @Service
 public class UserService {
@@ -37,7 +37,7 @@ public class UserService {
         }
         //if user exists with same email
         if (userRepository.existsByEmail(user.getEmail())) {
-            throw new ResourceAlreadyExistsException("user not found");
+            throw new ResourceAlreadyExistsException("user already exists");
         }
 
         //finally mapping the userdata to entity
@@ -53,12 +53,12 @@ public class UserService {
 
     public UserLoginResponse loginUser(UserLoginRequest login) {
         User temp = userRepository.findByUsernameAndEnabledTrue(login.getUsername()).orElseThrow(
-                () -> new ResolutionException("user not found")
+                () -> new ResourceNotFoundException("user not found")
         );
 
 
         boolean isMatch = passwordEncoder.matches(login.getPassword(), temp.getPassword());
-        if (!isMatch) throw new ResolutionException("Invalid username or password");
+        if (!isMatch) throw new ResourceNotFoundException("Invalid username or password");
         String token = jwtService.generateToken(temp);
 
         return MapToDto.mapToLoginResponse(temp, token);

@@ -7,5 +7,4 @@ import java.util.Optional;
 
 public interface HolidayRepository extends JpaRepository<Holiday, Integer> {
 
-    Optional<Holiday> findByName(String name);
 }

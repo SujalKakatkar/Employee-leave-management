@@ -29,10 +29,10 @@ public class LeaveBalanceService {
 
 
     //create balance of an employee
-    public void createLeaveBalance(String username, Integer year) {
+    public void createLeaveBalance(Integer userId, Integer year) {
 
         // find the user
-        User user = userRepository.findByUsernameAndEnabledTrue(username).orElseThrow(
+        User user = userRepository.findByUserIdAndEnabledTrue(userId).orElseThrow(
                 () -> new ResourceNotFoundException("user not found")
         );
         if(!leaveBalanceRepository.existsByUser_userIdAndUser_EnabledTrueAndYear(user.getUserId(),year)) {
@@ -70,7 +70,7 @@ public class LeaveBalanceService {
        return responseList;
     }
 
-    public List<LeaveBalanceResponse> getAllBalanceByUsername(Integer userId){
+    public List<LeaveBalanceResponse> getEmployeeBalance(Integer userId){
         List<LeaveBalance> leaveBalanceList =  leaveBalanceRepository.findAllByUser_UserId(userId);
         List<LeaveBalanceResponse> responseList = new ArrayList<>();
         for(LeaveBalance leaveBalance : leaveBalanceList){

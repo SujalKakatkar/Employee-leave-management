@@ -7,6 +7,8 @@ import com.example.EmployeeManagement.entity.Holiday;
 import com.example.EmployeeManagement.entity.LeaveType;
 import com.example.EmployeeManagement.service.HolidayService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +27,7 @@ public class HolidayController {
     }
 
     @PostMapping
-    public ResponseEntity<HolidayResponse> createHoliday(@Valid @RequestBody HolidayCreateRequest holiday) {
+    public ResponseEntity<HolidayResponse> createHoliday(@Valid @RequestBody  HolidayCreateRequest holiday) {
         return ResponseEntity.status(HttpStatus.CREATED).body(holidayService.createHoliday(holiday));
     }
 
@@ -35,8 +37,8 @@ public class HolidayController {
     }
 
     @DeleteMapping
-    public ResponseEntity<String> deleteLeaveType(@RequestParam String name) {
-        holidayService.deleteHoliday(name);
+    public ResponseEntity<String> deleteLeaveType(@Valid @RequestParam @NotNull(message = "holiday Id can't be null") Integer holidayId) {
+        holidayService.deleteHoliday(holidayId);
         return ResponseEntity.status(HttpStatus.OK).body("the leave type is deleted");
     }
 }
