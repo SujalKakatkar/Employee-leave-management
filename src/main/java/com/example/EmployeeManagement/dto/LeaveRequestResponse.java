@@ -30,8 +30,6 @@ public class LeaveRequestResponse {
     @Enumerated(EnumType.STRING)
     private LeaveStatus status;
 
-    @CreationTimestamp
-    @Column(nullable = false, updatable = false)
     private LocalDateTime appliedAt;
 
 }

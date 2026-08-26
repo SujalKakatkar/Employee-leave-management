@@ -2,7 +2,6 @@ package com.example.EmployeeManagement.controller;
 
 
 import com.example.EmployeeManagement.dto.DetailedReportResponse;
-import com.example.EmployeeManagement.dto.ReportResponse;
 import com.example.EmployeeManagement.dto.user.UserResponse;
 import com.example.EmployeeManagement.service.HRService;
 import jakarta.validation.constraints.NotNull;

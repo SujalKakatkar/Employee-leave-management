@@ -1,13 +1,11 @@
 package com.example.EmployeeManagement.service;
 
-import com.example.EmployeeManagement.dto.LeaveBalanceResponse;
 import com.example.EmployeeManagement.entity.LeaveBalance;
 import com.example.EmployeeManagement.entity.LeaveType;
 import com.example.EmployeeManagement.entity.User;
 import com.example.EmployeeManagement.exceptions.InvalidLeaveOperationException;
 import com.example.EmployeeManagement.exceptions.ResourceAlreadyExistsException;
 import com.example.EmployeeManagement.exceptions.ResourceNotFoundException;
-import com.example.EmployeeManagement.mapper.MapToDto;
 import com.example.EmployeeManagement.repository.LeaveBalanceRepository;
 import com.example.EmployeeManagement.repository.LeaveTypeRepository;
 import com.example.EmployeeManagement.repository.UserRepository;
@@ -35,7 +33,7 @@ public class LeaveBalanceService {
         User user = userRepository.findByUserIdAndEnabledTrue(userId).orElseThrow(
                 () -> new ResourceNotFoundException("user not found")
         );
-        if(!leaveBalanceRepository.existsByUser_userIdAndUser_EnabledTrueAndYear(user.getUserId(),year)) {
+        if(leaveBalanceRepository.existsByUser_userIdAndUser_EnabledTrueAndYear(user.getUserId(),year)) {
             throw  new ResourceAlreadyExistsException("i think you have already put leave balance for this user");
         };
 
@@ -56,27 +54,6 @@ public class LeaveBalanceService {
         leaveBalanceRepository.saveAll(leaveBalancesList);
 
 
-    }
-    //all
-    public List<LeaveBalanceResponse> getAll(){
-
-
-       List<LeaveBalance> leaveBalanceList = leaveBalanceRepository.findAll();
-       List<LeaveBalanceResponse> responseList = new ArrayList<>();
-       for(LeaveBalance leaveBalance : leaveBalanceList){
-           responseList.add(MapToDto.mapToLeaveBalanceResponse(leaveBalance));
-       }
-
-       return responseList;
-    }
-
-    public List<LeaveBalanceResponse> getEmployeeBalance(Integer userId){
-        List<LeaveBalance> leaveBalanceList =  leaveBalanceRepository.findAllByUser_UserId(userId);
-        List<LeaveBalanceResponse> responseList = new ArrayList<>();
-        for(LeaveBalance leaveBalance : leaveBalanceList){
-            responseList.add(MapToDto.mapToLeaveBalanceResponse(leaveBalance));
-        }
-        return  responseList;
     }
 
     //this service is used when approved

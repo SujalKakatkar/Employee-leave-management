@@ -51,7 +51,7 @@ public class SecurityConfig {
 
                                 //leave balance sheet table
                                 .requestMatchers(HttpMethod.POST, "/api/leavebalance").hasRole("HR")
-                                .requestMatchers(HttpMethod.GET,"/api/leavebalance/*").authenticated()
+                                .requestMatchers(HttpMethod.GET,"/api/leavebalance/*").hasAnyRole("HR","MANAGER")
 
                                 //leave Request
                                 .requestMatchers(HttpMethod.POST, "/api/leaverequest/").hasAnyRole("MANAGER","EMPLOYEE")

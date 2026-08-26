@@ -16,7 +16,7 @@ import java.time.LocalDate;
 public class LeaveRequestCreateRequest {
 
     @NotNull
-    private Integer LeaveTypeId;
+    private Integer leaveTypeId;
 
     @NotNull
     @FutureOrPresent(message = "Start date can't be in the past")

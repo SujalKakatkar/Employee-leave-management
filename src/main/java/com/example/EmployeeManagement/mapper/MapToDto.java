@@ -56,6 +56,7 @@ public class MapToDto {
         leaveRequestResponse.setNumberOfDays(leaveRequest.getNumberOfDays());
         leaveRequestResponse.setReason(leaveRequest.getReason());
         leaveRequestResponse.setStatus(leaveRequest.getStatus());
+        leaveRequestResponse.setAppliedAt(leaveRequest.getAppliedAt());
         return leaveRequestResponse;
     }
 

@@ -17,11 +17,11 @@ public class LeaveBalance {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private  Integer balanceId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId")
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "leave_type_id",nullable = false)
     private LeaveType leaveType;
 

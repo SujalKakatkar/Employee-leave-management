@@ -26,7 +26,7 @@ public class LeaveReview {
     @JoinColumn(name = "leave_request_id", nullable = false, unique = true)
     private LeaveRequest leaveRequest;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reviewer_id", nullable = false)
     private User reviewer;
 

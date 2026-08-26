@@ -13,11 +13,14 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -30,10 +33,6 @@ public class LeaveRequestService {
     private LeaveBalanceRepository leaveBalanceRepository;
     private HolidayRepository holidayRepository;
 
-
-    private boolean isDateInRange(LocalDate date, LocalDate startDate, LocalDate endDate) {
-        return !date.isBefore(startDate) && !date.isAfter(endDate);
-    }
 
     //request for leave
     @Transactional
@@ -69,15 +68,16 @@ public class LeaveRequestService {
 
 
         //validate the span of dates has holidays
-        List<Holiday> holidayList = holidayRepository.findAll();
+        //todo: go through the stream once again
+        Set<LocalDate> holidayDates = holidayRepository.findByDateBetween(startDate, endDate)
+                .stream()
+                .map(Holiday::getDate)
+                .collect(Collectors.toSet());
 
-        Long holidayCount = holidayList.stream().filter(
-                holiday -> isDateInRange(holiday.getDate(), startDate, endDate)
-        ).count();
-
-        Long days = ChronoUnit.DAYS.between(startDate, endDate) + 1;
-
-        long actualDays = days - holidayCount;
+        long actualDays = startDate.datesUntil(endDate.plusDays(1))
+                .filter(date -> date.getDayOfWeek() != DayOfWeek.SUNDAY)
+                .filter(date -> !holidayDates.contains(date))
+                .count();
 
 
         if(leaveBalance.getUsedDays() + actualDays > leaveBalance.getAllocatedDays()){
