@@ -1,7 +1,7 @@
 package com.example.EmployeeManagement.service;
 
-import com.example.EmployeeManagement.dto.LeaveApprovalResponse;
-import com.example.EmployeeManagement.entity.LeaveApproval;
+import com.example.EmployeeManagement.dto.LeaveReviewResponse;
+import com.example.EmployeeManagement.entity.LeaveReview;
 import com.example.EmployeeManagement.entity.LeaveRequest;
 import com.example.EmployeeManagement.entity.User;
 import com.example.EmployeeManagement.enums.ApproverRole;
@@ -11,7 +11,7 @@ import com.example.EmployeeManagement.exceptions.ResourceNotFoundException;
 import com.example.EmployeeManagement.exceptions.RoleMismatchException;
 import com.example.EmployeeManagement.exceptions.StatusMismatchException;
 import com.example.EmployeeManagement.mapper.MapToEntity;
-import com.example.EmployeeManagement.repository.LeaveApprovalRepository;
+import com.example.EmployeeManagement.repository.LeaveReviewRepository;
 import com.example.EmployeeManagement.repository.LeaveRequestRepository;
 import com.example.EmployeeManagement.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -24,13 +24,13 @@ import static com.example.EmployeeManagement.enums.ApproverRole.MANAGER;
 @Service
 public class LeaveApprovalService {
 
-    private final LeaveApprovalRepository leaveApprovalRepository;
+    private final LeaveReviewRepository leaveReviewRepository;
     private final UserRepository userRepository;
     private final LeaveBalanceService leaveBalanceService;
     private final LeaveRequestRepository leaveRequestRepository;
 
-    public LeaveApprovalService(LeaveApprovalRepository leaveApprovalRepository, UserRepository userRepository, LeaveBalanceService leaveBalanceService, LeaveRequestRepository leaveRequestRepository) {
-        this.leaveApprovalRepository = leaveApprovalRepository;
+    public LeaveApprovalService(LeaveReviewRepository leaveReviewRepository, UserRepository userRepository, LeaveBalanceService leaveBalanceService, LeaveRequestRepository leaveRequestRepository) {
+        this.leaveReviewRepository = leaveReviewRepository;
         this.userRepository = userRepository;
         this.leaveBalanceService = leaveBalanceService;
         this.leaveRequestRepository = leaveRequestRepository;
@@ -48,11 +48,11 @@ public class LeaveApprovalService {
 
     //review
     @Transactional
-    public void reviewTheRequest(LeaveApprovalResponse leaveApprovalResponse, String email){
+    public void reviewTheRequest(LeaveReviewResponse leaveReviewResponse, String email){
         User approver = userRepository.findByEmailAndEnabledTrue(email).orElseThrow(
                 ()-> new ResourceNotFoundException("user not found")
         );
-        LeaveRequest leaveRequest = leaveRequestRepository.findById(leaveApprovalResponse.getLeaveRequestId()).orElseThrow(
+        LeaveRequest leaveRequest = leaveRequestRepository.findById(leaveReviewResponse.getLeaveRequestId()).orElseThrow(
                 ()-> new ResourceNotFoundException("Request not found")
         );
 
@@ -64,10 +64,10 @@ public class LeaveApprovalService {
         }
 
         if(leaveRequest.getStatus() != LeaveStatus.PENDING){
-            throw new StatusMismatchException("the request is already approved");
+            throw new StatusMismatchException("the request may be reviewed by someone already");
         }
 
-        if(leaveApprovalResponse.getStatus() == LeaveStatus.APPROVED){
+        if(leaveReviewResponse.getStatus() == LeaveStatus.APPROVED){
             leaveBalanceService.updateLeaveBalance(
                     leaveAppliedUser.getUserId(),
                     leaveRequest.getLeaveType().getLeaveTypeId(),
@@ -78,10 +78,10 @@ public class LeaveApprovalService {
         }
 
 
-        LeaveApproval leaveApproval = MapToEntity.mapToLeaveApproval(leaveApprovalResponse,leaveRequest,approver,toApproverRole(approver.getRole()));
-        leaveApprovalRepository.save(leaveApproval);
+        LeaveReview leaveReview = MapToEntity.mapToLeaveReview(leaveReviewResponse,leaveRequest,approver,toApproverRole(approver.getRole()));
+        leaveReviewRepository.save(leaveReview);
 
-        leaveRequest.setStatus(leaveApprovalResponse.getStatus());
+        leaveRequest.setStatus(leaveReviewResponse.getStatus());
         leaveRequestRepository.save(leaveRequest);
 
 

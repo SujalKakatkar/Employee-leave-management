@@ -1,10 +1,10 @@
 package com.example.EmployeeManagement.controller;
 
 
+import com.example.EmployeeManagement.dto.DetailedReportResponse;
 import com.example.EmployeeManagement.dto.ReportResponse;
 import com.example.EmployeeManagement.dto.user.UserResponse;
 import com.example.EmployeeManagement.service.HRService;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import org.springframework.http.HttpStatus;
@@ -83,14 +83,14 @@ public class HRController {
     }
 
     @GetMapping("/{empId}/report")
-    public ResponseEntity<ReportResponse> employeeReport(@PathVariable @Positive(message = "empId must be positive") Integer empId) {
+    public ResponseEntity<DetailedReportResponse> employeeReport(@PathVariable @Positive(message = "empId must be positive") Integer empId) {
         return ResponseEntity.status(HttpStatus.OK).body(hrService.getEmployeeReport(empId));
     }
 
-//    @GetMapping("/report")
-//    public ResponseEntity<List<ReportResponse>> allReports(){
-//        return ResponseEntity.ok(hrService.getAllReports());
-//    }
+    @GetMapping("/{year}/reports")
+    public ResponseEntity<List<DetailedReportResponse>> allReports(@PathVariable Integer year){
+        return ResponseEntity.ok(hrService.getAllReports(year));
+    }
 
 
 }

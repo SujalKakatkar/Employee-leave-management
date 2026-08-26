@@ -1,15 +1,17 @@
 package com.example.EmployeeManagement.service;
 
 
-import com.example.EmployeeManagement.dto.ReportResponse;
+import com.example.EmployeeManagement.dto.DetailedReportResponse;
+import com.example.EmployeeManagement.dto.LeaveTypeDetails;
 import com.example.EmployeeManagement.dto.user.UserResponse;
 import com.example.EmployeeManagement.entity.LeaveBalance;
 import com.example.EmployeeManagement.entity.User;
+import com.example.EmployeeManagement.enums.LeaveStatus;
 import com.example.EmployeeManagement.enums.Role;
 import com.example.EmployeeManagement.exceptions.ResourceNotFoundException;
 import com.example.EmployeeManagement.exceptions.RoleMismatchException;
 import com.example.EmployeeManagement.mapper.MapToDto;
-import com.example.EmployeeManagement.repository.LeaveApprovalRepository;
+import com.example.EmployeeManagement.repository.LeaveReviewRepository;
 import com.example.EmployeeManagement.repository.LeaveBalanceRepository;
 import com.example.EmployeeManagement.repository.LeaveRequestRepository;
 import com.example.EmployeeManagement.repository.UserRepository;
@@ -17,19 +19,20 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class HRService {
 
     private final UserRepository userRepository;
     private final LeaveBalanceRepository leaveBalanceRepository;
-    private LeaveApprovalRepository leaveApprovalRepository;
-    private LeaveRequestRepository leaveRequestRepository;
+    private final LeaveRequestRepository leaveRequestRepository;
 
-    public HRService(UserRepository userRepository, LeaveBalanceRepository leaveBalanceRepository, LeaveApprovalRepository leaveApprovalRepository, LeaveRequestRepository leaveRequestRepository) {
+    public HRService(UserRepository userRepository, LeaveBalanceRepository leaveBalanceRepository,  LeaveRequestRepository leaveRequestRepository) {
+
         this.userRepository = userRepository;
         this.leaveBalanceRepository = leaveBalanceRepository;
-        this.leaveApprovalRepository = leaveApprovalRepository;
         this.leaveRequestRepository = leaveRequestRepository;
     }
 
@@ -102,9 +105,9 @@ public class HRService {
 
     }
 
-    public UserResponse getUser(Integer userId){
+    public UserResponse getUser(Integer userId) {
         User user = userRepository.findById(userId).orElseThrow(
-                ()-> new ResourceNotFoundException("user not found")
+                () -> new ResourceNotFoundException("user not found")
         );
 
         return MapToDto.mapToUserResponse(user);
@@ -139,11 +142,19 @@ public class HRService {
 
     }
 
-    public ReportResponse getEmployeeReport(Integer empId) {
+    public DetailedReportResponse getEmployeeReport(Integer empId) {
 
         User user = userRepository.findById(empId).orElseThrow(
                 () -> new ResourceNotFoundException("user not found")
         );
+
+        DetailedReportResponse reportResponse = new DetailedReportResponse();
+
+        reportResponse.setEmpId(user.getUserId());
+        reportResponse.setEmail(user.getEmail());
+        reportResponse.setRole(user.getRole());
+        reportResponse.setManagerId(user.getManager() != null ? user.getManager().getUserId() : null);
+        reportResponse.setName(user.getName());
 
         //the total is all the types of leaves in the year
         List<LeaveBalance> leaveBalanceList = leaveBalanceRepository.findAllByUser_UserId(empId);
@@ -152,35 +163,91 @@ public class HRService {
             throw new ResourceNotFoundException("no leaves found");
         }
 
+        List<LeaveTypeDetails> typeDetails = new ArrayList<>();
         double allocatedDays = 0;
         double usedDays = 0;
+
         for (LeaveBalance leaveBalance : leaveBalanceList) {
+            LeaveTypeDetails dto = new LeaveTypeDetails();
+            dto.setName(leaveBalance.getLeaveType().getName());
+            dto.setAllocatedDays(leaveBalance.getAllocatedDays());
+            dto.setUsedDays(leaveBalance.getUsedDays());
+            dto.setRemainingDays(leaveBalance.getAllocatedDays() - leaveBalance.getUsedDays());
+            typeDetails.add(dto);
             allocatedDays += leaveBalance.getAllocatedDays();
             usedDays += leaveBalance.getUsedDays();
         }
 
-        ReportResponse reportResponse = new ReportResponse();
+        reportResponse.setLeaveTypeBreakDown(typeDetails);
+        reportResponse.setTotalAllocatedDays(allocatedDays);
+        reportResponse.setTotalUsedDays(usedDays);
+        reportResponse.setTotalRemainingBalance(allocatedDays - usedDays);
 
-        reportResponse.setUserId(user.getUserId());
-        reportResponse.setManagerId(user.getManager() != null ? user.getManager().getUserId() : null);
-        reportResponse.setName(user.getName());
-        reportResponse.setRole(user.getRole());
-        reportResponse.setTotalLeaves(allocatedDays);
-        reportResponse.setUsedLeaves(usedDays);
+        reportResponse.setLeaveApproved(leaveRequestRepository.countByEmployee_UserIdAndStatus(user.getUserId(), LeaveStatus.APPROVED));
+        reportResponse.setLeavePending(leaveRequestRepository.countByEmployee_UserIdAndStatus(user.getUserId(), LeaveStatus.PENDING));
+        reportResponse.setLeaveRejected(leaveRequestRepository.countByEmployee_UserIdAndStatus(user.getUserId(), LeaveStatus.REJECTED));
 
         return reportResponse;
     }
 
 
-    //todo: learn simple and opitmal way to fetch the list of rows and think about N+1 problem while implementing this
 
-//    public List<ReportResponse> getAllReports() {
-//
-//        List<User> userList = userRepository.findAllByRoleInAndEnabledTrue(List.of(Role.EMPLOYEE, Role.MANAGER));
-//
-//        for(User user : userList){
-//
-//        }
-//
-//    }
+
+    public List<DetailedReportResponse> getAllReports(Integer year) {
+        List<LeaveBalance> leaveBalanceList = leaveBalanceRepository.findAllByYear(year);
+
+        // group all balance rows by the user they belong to
+        Map<User, List<LeaveBalance>> groupedByUser = leaveBalanceList.stream()
+                .collect(Collectors.groupingBy(LeaveBalance::getUser));
+
+        List<DetailedReportResponse> reportList = new ArrayList<>();
+
+        for (Map.Entry<User, List<LeaveBalance>> entry : groupedByUser.entrySet()) {
+            User user = entry.getKey();
+            List<LeaveBalance> balancesForUser = entry.getValue();
+
+            DetailedReportResponse dto = new DetailedReportResponse();
+
+            // user details
+            dto.setEmpId(user.getUserId());
+            dto.setEmail(user.getEmail());
+            dto.setRole(user.getRole());
+            dto.setManagerId(user.getManager() != null ? user.getManager().getUserId() : null);
+            dto.setName(user.getName());
+
+            // build leave type breakdown + totals in one pass
+            List<LeaveTypeDetails> breakdown = new ArrayList<>();
+            double totalAllocated = 0;
+            double totalUsed = 0;
+
+            for (LeaveBalance balance : balancesForUser) {
+                double allocated = balance.getAllocatedDays() != null ? balance.getAllocatedDays() : 0.0;
+                double used = balance.getUsedDays() != null ? balance.getUsedDays() : 0.0;
+
+                LeaveTypeDetails typeDto = new LeaveTypeDetails();
+                typeDto.setName(balance.getLeaveType().getName());
+                typeDto.setAllocatedDays(allocated);
+                typeDto.setUsedDays(used);
+                typeDto.setRemainingDays(allocated - used);
+                breakdown.add(typeDto);
+
+                totalAllocated += allocated;
+                totalUsed += used;
+            }
+
+            dto.setLeaveTypeBreakDown(breakdown);
+            dto.setTotalAllocatedDays(totalAllocated);
+            dto.setTotalUsedDays(totalUsed);
+            dto.setTotalRemainingBalance(totalAllocated - totalUsed);
+
+            // per-user request counts
+            dto.setLeaveApproved(leaveRequestRepository.countByEmployee_UserIdAndStatus(user.getUserId(), LeaveStatus.APPROVED));
+            dto.setLeavePending(leaveRequestRepository.countByEmployee_UserIdAndStatus(user.getUserId(), LeaveStatus.PENDING));
+            dto.setLeaveRejected(leaveRequestRepository.countByEmployee_UserIdAndStatus(user.getUserId(), LeaveStatus.REJECTED));
+
+            reportList.add(dto);
+        }
+
+        return reportList;
+    }
 }

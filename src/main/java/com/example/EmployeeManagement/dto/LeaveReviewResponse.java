@@ -11,7 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class LeaveApprovalResponse {
+public class LeaveReviewResponse {
 
     private Integer leaveRequestId;
     private LeaveStatus status;

@@ -1,7 +1,7 @@
 package com.example.EmployeeManagement.mapper;
 
 import com.example.EmployeeManagement.dto.HolidayCreateRequest;
-import com.example.EmployeeManagement.dto.LeaveApprovalResponse;
+import com.example.EmployeeManagement.dto.LeaveReviewResponse;
 import com.example.EmployeeManagement.dto.LeaveRequestCreateRequest;
 import com.example.EmployeeManagement.dto.LeaveTypeCreateRequest;
 import com.example.EmployeeManagement.dto.user.UserCreateRequest;
@@ -9,7 +9,6 @@ import com.example.EmployeeManagement.entity.*;
 import com.example.EmployeeManagement.enums.ApproverRole;
 import com.example.EmployeeManagement.enums.LeaveStatus;
 import com.example.EmployeeManagement.enums.Role;
-import org.apache.tomcat.websocket.server.WsWriteTimeout;
 
 public class MapToEntity {
 
@@ -43,19 +42,19 @@ public class MapToEntity {
         return leaveRequest;
     }
 
-    public static LeaveApproval mapToLeaveApproval(
-            LeaveApprovalResponse dto,
+    public static LeaveReview mapToLeaveReview(
+            LeaveReviewResponse dto,
             LeaveRequest leaveRequest,
             User approver,
             ApproverRole role
     ){
-        LeaveApproval leaveApproval = new LeaveApproval();
-        leaveApproval.setStatus(dto.getStatus());
-        leaveApproval.setApprover(approver);
-        leaveApproval.setLeaveRequest(leaveRequest);
-        leaveApproval.setApproverRole(role);
-        leaveApproval.setComments(dto.getComment());
-        return leaveApproval;
+        LeaveReview leaveReview = new LeaveReview();
+        leaveReview.setStatus(dto.getStatus());
+        leaveReview.setReviewer(approver);
+        leaveReview.setLeaveRequest(leaveRequest);
+        leaveReview.setReviewerRole(role);
+        leaveReview.setComments(dto.getComment());
+        return leaveReview;
 
     }
 

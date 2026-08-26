@@ -2,11 +2,8 @@ package com.example.EmployeeManagement.controller;
 
 import com.example.EmployeeManagement.dto.LeaveTypeCreateRequest;
 import com.example.EmployeeManagement.dto.LeaveTypeResponse;
-import com.example.EmployeeManagement.entity.LeaveType;
-import com.example.EmployeeManagement.enums.LeaveStatus;
 import com.example.EmployeeManagement.service.LeaveTypeService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

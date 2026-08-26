@@ -3,11 +3,8 @@ package com.example.EmployeeManagement.controller;
 
 import com.example.EmployeeManagement.dto.HolidayCreateRequest;
 import com.example.EmployeeManagement.dto.HolidayResponse;
-import com.example.EmployeeManagement.entity.Holiday;
-import com.example.EmployeeManagement.entity.LeaveType;
 import com.example.EmployeeManagement.service.HolidayService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

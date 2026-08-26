@@ -12,26 +12,26 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "leave_approvals")
+@Table(name = "leave_reviews")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class LeaveApproval {
+public class LeaveReview {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer approvalId;
+    private Integer reviewId;
 
     @OneToOne
     @JoinColumn(name = "leave_request_id", nullable = false, unique = true)
     private LeaveRequest leaveRequest;
 
     @ManyToOne
-    @JoinColumn(name = "approver_id", nullable = false)
-    private User approver;
+    @JoinColumn(name = "reviewer_id", nullable = false)
+    private User reviewer;
 
     @Enumerated(EnumType.STRING)
-    private ApproverRole approverRole;
+    private ApproverRole reviewerRole;
 
     @Enumerated(EnumType.STRING)
     private LeaveStatus status;
