@@ -32,12 +32,8 @@ public class UserService {
 
     public UserResponse createEmployee(UserCreateRequest user) {
         //if user exists with same username
-        if (userRepository.existsByUsername(user.getUsername())) {
-            throw new ResourceAlreadyExistsException("username already used");
-        }
-        //if user exists with same email
-        if (userRepository.existsByEmail(user.getEmail())) {
-            throw new ResourceAlreadyExistsException("user already exists");
+        if (userRepository.existsByUsername(user.getUsername()) || userRepository.existsByEmail(user.getEmail())) {
+            throw new ResourceAlreadyExistsException("username or email already used");
         }
 
         //finally mapping the userdata to entity

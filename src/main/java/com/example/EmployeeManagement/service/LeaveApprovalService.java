@@ -76,15 +76,11 @@ public class LeaveApprovalService {
 
             );
         }
-
-
         LeaveReview leaveReview = MapToEntity.mapToLeaveReview(leaveReviewResponse,leaveRequest,approver,toApproverRole(approver.getRole()));
         leaveReviewRepository.save(leaveReview);
 
         leaveRequest.setStatus(leaveReviewResponse.getStatus());
         leaveRequestRepository.save(leaveRequest);
-
-
 
     }
 

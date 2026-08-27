@@ -43,12 +43,7 @@ public class LeaveTypeService {
     public List<LeaveTypeResponse> getAllTypes() {
 
         List<LeaveType> leaveTypeList = leaveTypeRepository.findAll();
-        List<LeaveTypeResponse> leaveTypeResponses = new ArrayList<>();
-        for(LeaveType leaveType : leaveTypeList){
-            leaveTypeResponses.add(
-                    MapToDto.mapToLeaveTypeResponse(leaveType)
-            );
-        }
-        return leaveTypeResponses;
+
+        return leaveTypeList.stream().map(MapToDto::mapToLeaveTypeResponse).toList();
     }
 }

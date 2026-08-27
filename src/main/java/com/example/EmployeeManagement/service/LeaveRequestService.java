@@ -103,18 +103,8 @@ public class LeaveRequestService {
         List<LeaveRequest> leaveRequestList = leaveRequestRepository.findAllByEmployee_UserId(user.getUserId());
 
 
-        List<LeaveRequestResponse> responseList = new ArrayList<>();
-
-        //convert the leave request in the dto and
-        for(LeaveRequest leaveRequest : leaveRequestList){
-           responseList.add(
-                   MapToDto.mapToLeaveRequestResponse(leaveRequest)
-           );
-
-        }
-
         //return
-        return responseList;
+        return leaveRequestList.stream().map(MapToDto::mapToLeaveRequestResponse).toList();
     }
 
 

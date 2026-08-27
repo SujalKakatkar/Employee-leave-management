@@ -39,13 +39,7 @@ public class HolidayService {
 
     public List<HolidayResponse> getAllHolidays() {
         List<Holiday> holidayList = holidayRepository.findAll();
-        List<HolidayResponse> responseList = new ArrayList<>();
-        for (Holiday holiday : holidayList){
-            responseList.add(
-                    MapToDto.mapToHolidayResponse(holiday)
-            );
-        }
 
-        return responseList;
+        return holidayList.stream().map(MapToDto::mapToHolidayResponse).toList();
     }
 }

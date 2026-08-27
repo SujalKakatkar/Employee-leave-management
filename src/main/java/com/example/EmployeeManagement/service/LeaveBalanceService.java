@@ -10,6 +10,8 @@ import com.example.EmployeeManagement.repository.LeaveBalanceRepository;
 import com.example.EmployeeManagement.repository.LeaveTypeRepository;
 import com.example.EmployeeManagement.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +29,7 @@ public class LeaveBalanceService {
 
 
     //create balance of an employee
+    @Transactional
     public void createLeaveBalance(Integer userId, Integer year) {
 
         // find the user
