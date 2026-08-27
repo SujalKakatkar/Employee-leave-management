@@ -11,7 +11,6 @@ import com.example.EmployeeManagement.enums.Role;
 import com.example.EmployeeManagement.exceptions.ResourceNotFoundException;
 import com.example.EmployeeManagement.exceptions.RoleMismatchException;
 import com.example.EmployeeManagement.mapper.MapToDto;
-import com.example.EmployeeManagement.repository.LeaveReviewRepository;
 import com.example.EmployeeManagement.repository.LeaveBalanceRepository;
 import com.example.EmployeeManagement.repository.LeaveRequestRepository;
 import com.example.EmployeeManagement.repository.UserRepository;
@@ -29,7 +28,7 @@ public class HRService {
     private final LeaveBalanceRepository leaveBalanceRepository;
     private final LeaveRequestRepository leaveRequestRepository;
 
-    public HRService(UserRepository userRepository, LeaveBalanceRepository leaveBalanceRepository,  LeaveRequestRepository leaveRequestRepository) {
+    public HRService(UserRepository userRepository, LeaveBalanceRepository leaveBalanceRepository, LeaveRequestRepository leaveRequestRepository) {
 
         this.userRepository = userRepository;
         this.leaveBalanceRepository = leaveBalanceRepository;
@@ -95,7 +94,9 @@ public class HRService {
         if (user.getRole() == Role.MANAGER) {
             //add null the manger id refenced by this manager
             List<User> userList = userRepository.findAllByManager_UserId(user.getUserId());
-            for (User temp : userList) temp.setManager(null);
+
+            userList.forEach(u -> u.setManager(null));
+
 
             userRepository.saveAll(userList);
         }
@@ -118,28 +119,14 @@ public class HRService {
     public List<UserResponse> getAllEmployees() {
         List<User> userList = userRepository.findAllByRoleInAndEnabledTrue(List.of(Role.EMPLOYEE, Role.MANAGER));
 
-        List<UserResponse> userResponsesList = new ArrayList<>();
-        for (User user : userList) {
-            userResponsesList.add(MapToDto.mapToUserResponse(user));
-
-        }
-
-        return userResponsesList;
+        return userList.stream().map(MapToDto::mapToUserResponse).toList();
 
     }
 
     // get all request
     public List<UserResponse> getAllManagers() {
         List<User> userList = userRepository.findAllByRoleInAndEnabledTrue(List.of(Role.MANAGER));
-
-        List<UserResponse> userResponsesList = new ArrayList<>();
-        for (User user : userList) {
-            userResponsesList.add(MapToDto.mapToUserResponse(user));
-
-        }
-
-        return userResponsesList;
-
+        return userList.stream().map(MapToDto::mapToUserResponse).collect(Collectors.toList());
     }
 
     public DetailedReportResponse getEmployeeReport(Integer empId) {
@@ -191,14 +178,14 @@ public class HRService {
     }
 
 
-
-
     public List<DetailedReportResponse> getAllReports(Integer year) {
         List<LeaveBalance> leaveBalanceList = leaveBalanceRepository.findAllByYear(year);
 
         // group all balance rows by the user they belong to
-        Map<User, List<LeaveBalance>> groupedByUser = leaveBalanceList.stream()
-                .collect(Collectors.groupingBy(LeaveBalance::getUser));
+        Map<User, List<LeaveBalance>> groupedByUser =
+                leaveBalanceList
+                        .stream()
+                        .collect(Collectors.groupingBy(LeaveBalance::getUser));
 
         List<DetailedReportResponse> reportList = new ArrayList<>();
 
