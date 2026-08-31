@@ -4,14 +4,17 @@ import Mainlayout from '@/layouts/Mainlayout'
 import EmployeeDashboardPage from '@/pages/EmployeeDashboardPage'
 import HeroPage from '@/pages/HeroPage'
 import LoginPage from '@/pages/LoginPage'
+import NotFoundPage from '@/pages/NotFoundPage'
+import ProfileCompletePage from '@/pages/ProfileCompletePage'
 import SignupPage from '@/pages/SignupPage'
-import { createBrowserRouter } from 'react-router'
+import { createBrowserRouter, type RouteObject } from 'react-router'
 
 
-export const routes = createBrowserRouter([
-  
+const routeConfig: RouteObject[] = [
+
     {
         element: <Herolayout />,
+        errorElement:<NotFoundPage/>,
         children: [
             {
                 path: "/",
@@ -26,29 +29,42 @@ export const routes = createBrowserRouter([
         element: <Mainlayout />,
         children: [
             {
-                path:"/",
-                element:<EmployeeDashboardPage/>
+                path: "/",
+                element: <EmployeeDashboardPage />
             }
         ]
 
     },
     //todo:create layout without navbar where only logo is placed on the top left for auth routes
     {
-        element:<Authlayout/>,
-        children:[
+        element: <Authlayout />,
+        errorElement:<NotFoundPage/>,
+        children: [
             {
-                path:"/auth/login",
-                element:<LoginPage/>
+                path: "/auth/signin",
+                element: <LoginPage />
 
             },
             {
-                path:"/auth/signup",
-                element:<SignupPage/>
+                path: "/auth/signup",
+                element: <SignupPage />
             },
+            {
+                path:'/profile-details',
+                element:<ProfileCompletePage/>
+            }
             // {
             //     path:"/auth/reset-password"
             // }
         ]
+    },
+    {
+        path:"*",
+        element:<NotFoundPage/>
     }
 
-])
+
+];
+
+
+export const routes = createBrowserRouter(routeConfig);

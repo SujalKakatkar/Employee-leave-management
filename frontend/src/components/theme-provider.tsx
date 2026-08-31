@@ -1,73 +1,86 @@
-import { createContext, useContext, useEffect, useState } from "react"
+import React, { createContext, useEffect, useState, useContext } from "react"
 
-type Theme = "dark" | "light" | "system"
+type Theme = "light" | "dark" | "system"
 
-type ThemeProviderProps = {
-    children: React.ReactNode
-    defaultTheme?: Theme
-    storageKey?: string
-}
-
-type ThemeProviderState = {
+interface ThemeContextType {
     theme: Theme
     setTheme: (theme: Theme) => void
+    toggleTheme: () => void
 }
 
-const initialState: ThemeProviderState = {
-    theme: "system",
-    setTheme: () => null,
+const ThemeContext = createContext<ThemeContextType | null>(null)
+
+const STORAGE_KEY = "vite-ui-theme"
+
+function getSystemTheme(): "light" | "dark" {
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
 }
 
-const ThemeProviderContext = createContext<ThemeProviderState>(initialState)
-
-export function ThemeProvider({
-    children,
-    defaultTheme = "system",
-    storageKey = "vite-ui-theme",
-    ...props
-}: ThemeProviderProps) {
-    const [theme, setTheme] = useState<Theme>(
-        () => (localStorage.getItem(storageKey) as Theme) || defaultTheme
-    )
+export function ThemeProvider({ children }: { children: React.ReactNode }) {
+    const [theme, setThemeState] = useState<Theme>(() => {
+        const saved = localStorage.getItem(STORAGE_KEY) as Theme | null
+        return saved ?? "system"
+    })
 
     useEffect(() => {
-        const root = window.document.documentElement
+        const css = document.createElement('style')
+        css.appendChild(
+            document.createTextNode(
+                `* {
+                -webkit-transition: none !important;
+                -moz-transition: none !important;
+                -o-transition: none !important;
+                -ms-transition: none !important;
+                transition: none !important;
+                }`
+            )
+        )
+        document.head.appendChild(css)
 
-        root.classList.remove("light", "dark")
+        const resolvedTheme = theme === "system" ? getSystemTheme() : theme
 
-        if (theme === "system") {
-            const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
-                .matches
-                ? "dark"
-                : "light"
+        document.documentElement.classList.remove("light", "dark")
+        document.documentElement.classList.add(resolvedTheme)
+        localStorage.setItem(STORAGE_KEY, theme)
 
-            root.classList.add(systemTheme)
-            return
-        }
+        // Force browser to paint the new theme without transition
+        void window.getComputedStyle(css).opacity
 
-        root.classList.add(theme)
+        setTimeout(() => {
+            document.head.removeChild(css)
+        }, 1)
     }, [theme])
 
-    const value = {
-        theme,
-        setTheme: (theme: Theme) => {
-            localStorage.setItem(storageKey, theme)
-            setTheme(theme)
-        },
-    }
+    // keep in sync with OS theme changes when "system" is selected
+    useEffect(() => {
+        if (theme !== "system") return
+
+        const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)")
+
+        const handleChange = () => {
+            const resolvedTheme = getSystemTheme()
+            document.documentElement.classList.remove("light", "dark")
+            document.documentElement.classList.add(resolvedTheme)
+        }
+
+        mediaQuery.addEventListener("change", handleChange)
+        return () => mediaQuery.removeEventListener("change", handleChange)
+    }, [theme])
 
     return (
-        <ThemeProviderContext.Provider {...props} value={value}>
+        <ThemeContext.Provider value={{
+            theme,
+            setTheme: (newTheme: Theme) => setThemeState(newTheme),
+            toggleTheme: () => setThemeState(theme === "dark" ? "light" : "dark")
+        }}>
             {children}
-        </ThemeProviderContext.Provider>
+        </ThemeContext.Provider>
     )
 }
 
-export const useTheme = () => {
-    const context = useContext(ThemeProviderContext)
-
-    if (context === undefined)
-        throw new Error("useTheme must be used within a ThemeProvider")
-
-    return context
+// eslint-disable-next-line react-refresh/only-export-components
+export function useTheme() {
+    const ctx = useContext(ThemeContext)
+    if (!ctx) throw new Error("useTheme must be used inside ThemeProvider")
+    return ctx
 }

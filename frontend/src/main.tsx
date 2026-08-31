@@ -5,13 +5,10 @@ import App from './App.tsx'
 import { RouterProvider } from 'react-router'
 import { routes } from './routes/routes.tsx'
 import { ThemeProvider } from './components/theme-provider.tsx'
+import Root from './Root.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    {/* dark mode fliker needs to fix */}
-    <ThemeProvider defaultTheme='dark' storageKey='vite-ui-theme'>
-      <RouterProvider router={routes} />
-
-    </ThemeProvider>
+   <Root/>
   </StrictMode>,
 )

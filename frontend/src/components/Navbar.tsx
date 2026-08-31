@@ -1,8 +1,11 @@
 import React from 'react'
+import { ModeToggle } from './Themetoggle'
 
 function Navbar() {
   return (
-    <nav>Navbar</nav>
+    <nav>
+      <ModeToggle/>
+    </nav>
   )
 }
 
