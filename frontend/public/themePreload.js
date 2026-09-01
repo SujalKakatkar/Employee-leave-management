@@ -1,7 +1,7 @@
 (() => {
-    const saved = localStorage.getItem("vite-ui-theme");
+    const saved = localStorage.getItem("theme");
 
-    if(saved === "dark" || saved === "light") {
+    if (saved === "dark" || saved === "light") {
         document.documentElement.classList.add(saved);
         return;
     }

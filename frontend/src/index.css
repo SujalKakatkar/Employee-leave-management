@@ -46,6 +46,45 @@
     --radius-2xl: calc(var(--radius) * 1.8);
     --radius-3xl: calc(var(--radius) * 2.2);
     --radius-4xl: calc(var(--radius) * 2.6);
+
+    /* Fibonacci spacing scale */
+      --spacing-fib-1: 0.0625rem;
+      /* 1px */
+      --spacing-fib-2: 0.125rem;
+      /* 2px */
+      --spacing-fib-3: 0.1875rem;
+      /* 3px */
+      --spacing-fib-5: 0.3125rem;
+      /* 5px */
+      --spacing-fib-8: 0.5rem;
+      /* 8px */
+      --spacing-fib-13: 0.8125rem;
+      /* 13px */
+      --spacing-fib-21: 1.3125rem;
+      /* 21px */
+      --spacing-fib-34: 2.125rem;
+      /* 34px */
+      --spacing-fib-55: 3.4375rem;
+      /* 55px */
+      --spacing-fib-89: 5.5625rem;
+      /* 89px */
+      --spacing-fib-144: 9rem;
+      /* 144px */
+      --spacing-fib-233: 14.5625rem;
+      /* 233px */
+    
+      /* Fibonacci font sizes */
+      --text-fib-13: 0.8125rem;
+      --text-fib-21: 1.3125rem;
+      --text-fib-34: 2.125rem;
+      --text-fib-55: 3.4375rem;
+      --text-fib-89: 5.5625rem;
+    
+      /* Fibonacci radius (separate namespace from shadcn's --radius-*) */
+      --radius-fib-3: 0.1875rem;
+      --radius-fib-5: 0.3125rem;
+      --radius-fib-8: 0.5rem;
+      --radius-fib-13: 0.8125rem;
 }
 
 :root {
@@ -127,4 +166,26 @@
   html {
     @apply font-sans;
     }
+}
+
+@layer components {
+  .h1 {
+    @apply text-fib-34 md:text-fib-55 xl:text-fib-89 font-bold leading-tight;
+  }
+
+  .h2 {
+    @apply text-fib-21 md:text-fib-34 xl:text-fib-55 font-semibold leading-snug;
+  }
+
+  .h3 {
+    @apply text-fib-13 md:text-fib-21 xl:text-fib-34 font-semibold leading-snug;
+  }
+
+  .card {
+    @apply p-fib-8 md:p-fib-13 xl:p-fib-21 gap-fib-8 rounded-fib-8;
+  }
+
+  .section {
+    @apply py-fib-21 md:py-fib-34 xl:py-fib-55;
+  }
 }

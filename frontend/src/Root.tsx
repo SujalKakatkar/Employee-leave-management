@@ -7,7 +7,7 @@ function Root() {
 
 
     return (
-        <ThemeProvider defaultTheme='dark' storageKey='vite-ui-theme' >
+        <ThemeProvider >
             {/* dark mode fliker needs to fix */}
             <RouterProvider router={routes} />
         </ThemeProvider >

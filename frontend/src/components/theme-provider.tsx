@@ -1,25 +1,22 @@
 import React, { createContext, useEffect, useState, useContext } from "react"
 
-type Theme = "light" | "dark" | "system"
+type Theme = "light" | "dark"
 
 interface ThemeContextType {
     theme: Theme
-    setTheme: (theme: Theme) => void
     toggleTheme: () => void
 }
 
 const ThemeContext = createContext<ThemeContextType | null>(null)
 
-const STORAGE_KEY = "vite-ui-theme"
-
-function getSystemTheme(): "light" | "dark" {
-    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
-}
-
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-    const [theme, setThemeState] = useState<Theme>(() => {
-        const saved = localStorage.getItem(STORAGE_KEY) as Theme | null
-        return saved ?? "system"
+    const [theme, setTheme] = useState<Theme>(() => {
+        const saved = localStorage.getItem("theme") as Theme | null
+        if (saved) return saved
+
+        return window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light"
     })
 
     useEffect(() => {
@@ -37,11 +34,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         )
         document.head.appendChild(css)
 
-        const resolvedTheme = theme === "system" ? getSystemTheme() : theme
-
         document.documentElement.classList.remove("light", "dark")
-        document.documentElement.classList.add(resolvedTheme)
-        localStorage.setItem(STORAGE_KEY, theme)
+        document.documentElement.classList.add(theme)
+        localStorage.setItem("theme", theme)
 
         // Force browser to paint the new theme without transition
         void window.getComputedStyle(css).opacity
@@ -51,27 +46,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         }, 1)
     }, [theme])
 
-    // keep in sync with OS theme changes when "system" is selected
-    useEffect(() => {
-        if (theme !== "system") return
-
-        const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)")
-
-        const handleChange = () => {
-            const resolvedTheme = getSystemTheme()
-            document.documentElement.classList.remove("light", "dark")
-            document.documentElement.classList.add(resolvedTheme)
-        }
-
-        mediaQuery.addEventListener("change", handleChange)
-        return () => mediaQuery.removeEventListener("change", handleChange)
-    }, [theme])
-
     return (
         <ThemeContext.Provider value={{
             theme,
-            setTheme: (newTheme: Theme) => setThemeState(newTheme),
-            toggleTheme: () => setThemeState(theme === "dark" ? "light" : "dark")
+            toggleTheme: () => setTheme(theme === "dark" ? "light" : "dark")
         }}>
             {children}
         </ThemeContext.Provider>
